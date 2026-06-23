@@ -7,4 +7,9 @@ export interface Product {
   tags: string[];
   calories: number;
   protein: string;
+  packagingImages?: string[];
+  // Translation fields
+  nameEn: string;
+  descriptionEn: string;
+  tagsEn: string[];
 }
