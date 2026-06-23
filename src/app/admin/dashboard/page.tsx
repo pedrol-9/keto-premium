@@ -32,6 +32,7 @@ export default function AdminDashboardPage() {
     manualIncome: "",
   });
   const [accountingStatus, setAccountingStatus] = useState<string | null>(null);
+  const [confirmedCount, setConfirmedCount] = useState<number>(0);
 
   // Authenticate and load dashboard data
   useEffect(() => {
@@ -49,12 +50,18 @@ export default function AdminDashboardPage() {
       setStoreStatus(savedStatus);
     }
 
-    // 2. Load whatsapp redirects
+    // Load whatsapp redirects
     const savedRedirects = localStorage.getItem("whatsappRedirects");
     if (savedRedirects) {
       setWhatsappRedirects(parseInt(savedRedirects, 10));
     } else {
       localStorage.setItem("whatsappRedirects", "342");
+    }
+
+    // Load confirmed count
+    const savedConfirmedCount = localStorage.getItem("kb_confirmed_orders_count");
+    if (savedConfirmedCount) {
+      setConfirmedCount(parseInt(savedConfirmedCount, 10));
     }
 
     // 3. Load orders
@@ -141,6 +148,15 @@ export default function AdminDashboardPage() {
           setOrders(mappedOrders);
         }
 
+        // Fetch confirmed orders count
+        const { count: dbConfirmedCount } = await supabase
+          .from("orders")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "confirmed");
+        if (dbConfirmedCount !== null) {
+          setConfirmedCount(dbConfirmedCount);
+        }
+
         // Fetch latest accounting row
         const { data: dbAccounting } = await supabase
           .from("accounting")
@@ -204,6 +220,14 @@ export default function AdminDashboardPage() {
               }));
               setOrders(mappedOrders);
             }
+
+            const { count: dbConfirmedCount } = await supabase
+              .from("orders")
+              .select("*", { count: "exact", head: true })
+              .eq("status", "confirmed");
+            if (dbConfirmedCount !== null) {
+              setConfirmedCount(dbConfirmedCount);
+            }
           }
         )
         .subscribe();
@@ -237,8 +261,9 @@ export default function AdminDashboardPage() {
     setOrders(nextOrders);
     localStorage.setItem("kb_orders", JSON.stringify(nextOrders));
 
-    const confirmedCount = parseInt(localStorage.getItem("kb_confirmed_orders_count") || "0", 10);
-    localStorage.setItem("kb_confirmed_orders_count", (confirmedCount + 1).toString());
+    const nextConfirmedCount = confirmedCount + 1;
+    setConfirmedCount(nextConfirmedCount);
+    localStorage.setItem("kb_confirmed_orders_count", nextConfirmedCount.toString());
 
     if (isConfigured) {
       try {
@@ -289,7 +314,6 @@ export default function AdminDashboardPage() {
   // Calculated metrics
   const totalVisits = 1248;
   const conversionRate = ((whatsappRedirects / totalVisits) * 100).toFixed(1);
-  const confirmedCount = parseInt(localStorage.getItem("kb_confirmed_orders_count") || "0", 10);
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-on-background font-sans antialiased selection:bg-primary-container selection:text-on-primary-container">
