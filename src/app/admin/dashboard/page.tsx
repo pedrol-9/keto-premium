@@ -33,6 +33,8 @@ export default function AdminDashboardPage() {
   });
   const [accountingStatus, setAccountingStatus] = useState<string | null>(null);
   const [confirmedCount, setConfirmedCount] = useState<number>(0);
+  const [totalVisits, setTotalVisits] = useState<number>(0);
+  const [frequentCustomers, setFrequentCustomers] = useState<{name: string, orders: number, tag: string}[]>([]);
 
   // Authenticate and load dashboard data
   useEffect(() => {
@@ -55,7 +57,7 @@ export default function AdminDashboardPage() {
     if (savedRedirects) {
       setWhatsappRedirects(parseInt(savedRedirects, 10));
     } else {
-      localStorage.setItem("whatsappRedirects", "342");
+      setWhatsappRedirects(0);
     }
 
     // Load confirmed count
@@ -72,7 +74,7 @@ export default function AdminDashboardPage() {
       } catch (e) {
         console.error(e);
       }
-    } else {
+    } else if (!isConfigured) {
       // Seed default mock orders if empty
       const defaultOrders: Order[] = [
         {
@@ -114,11 +116,21 @@ export default function AdminDashboardPage() {
       }
     }
 
+    // 5. Load frequent clients placeholder only if offline
+    if (!isConfigured) {
+      setFrequentCustomers([
+        { name: "Sofia Garcia", orders: 2, tag: "Strict Keto" },
+        { name: "James Wilson", orders: 5, tag: "High Protein" },
+        { name: "Ana Silva", orders: 1, tag: "Low Carb" },
+        { name: "Lucas Peeters", orders: 8, tag: "Strict Keto" }
+      ]);
+    }
+
     // --- Supabase Fetches ---
     const fetchSupabaseData = async () => {
       if (!isConfigured) return;
       try {
-        // Fetch config keys (store_status, whatsapp_redirects)
+        // Fetch config keys (store_status, whatsapp_redirects, total_visits)
         const { data: configData } = await supabase
           .from("config")
           .select("key, value");
@@ -128,6 +140,9 @@ export default function AdminDashboardPage() {
 
           const redirectsVal = configData.find((c) => c.key === "whatsapp_redirects")?.value;
           if (redirectsVal) setWhatsappRedirects(parseInt(redirectsVal, 10));
+
+          const visitsVal = configData.find((c) => c.key === "total_visits")?.value;
+          if (visitsVal) setTotalVisits(parseInt(visitsVal, 10));
         }
 
         // Fetch active orders (status = 'pending')
@@ -155,6 +170,27 @@ export default function AdminDashboardPage() {
           .eq("status", "confirmed");
         if (dbConfirmedCount !== null) {
           setConfirmedCount(dbConfirmedCount);
+        }
+
+        // Fetch all orders for frequent customers grouping
+        const { data: allDbOrders } = await supabase
+          .from("orders")
+          .select("customer_name");
+        if (allDbOrders) {
+          const clientMap: Record<string, number> = {};
+          allDbOrders.forEach((o) => {
+            clientMap[o.customer_name] = (clientMap[o.customer_name] || 0) + 1;
+          });
+          const mappedCustomers = Object.entries(clientMap)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([name, count]) => {
+              let tag = "Cliente Frecuente";
+              if (count >= 5) tag = "VIP Keto";
+              else if (count >= 3) tag = "Keto Lover";
+              return { name, orders: count, tag };
+            });
+          setFrequentCustomers(mappedCustomers);
         }
 
         // Fetch latest accounting row
@@ -193,6 +229,8 @@ export default function AdminDashboardPage() {
               setStoreStatus(row.value as "open" | "closed");
             } else if (row.key === "whatsapp_redirects") {
               setWhatsappRedirects(parseInt(row.value, 10));
+            } else if (row.key === "total_visits") {
+              setTotalVisits(parseInt(row.value, 10));
             }
           }
         )
@@ -227,6 +265,26 @@ export default function AdminDashboardPage() {
               .eq("status", "confirmed");
             if (dbConfirmedCount !== null) {
               setConfirmedCount(dbConfirmedCount);
+            }
+
+            const { data: allDbOrders } = await supabase
+              .from("orders")
+              .select("customer_name");
+            if (allDbOrders) {
+              const clientMap: Record<string, number> = {};
+              allDbOrders.forEach((o) => {
+                clientMap[o.customer_name] = (clientMap[o.customer_name] || 0) + 1;
+              });
+              const mappedCustomers = Object.entries(clientMap)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([name, count]) => {
+                  let tag = "Cliente Frecuente";
+                  if (count >= 5) tag = "VIP Keto";
+                  else if (count >= 3) tag = "Keto Lover";
+                  return { name, orders: count, tag };
+                });
+              setFrequentCustomers(mappedCustomers);
             }
           }
         )
@@ -312,8 +370,7 @@ export default function AdminDashboardPage() {
   }
 
   // Calculated metrics
-  const totalVisits = 1248;
-  const conversionRate = ((whatsappRedirects / totalVisits) * 100).toFixed(1);
+  const conversionRate = totalVisits > 0 ? ((whatsappRedirects / totalVisits) * 100).toFixed(1) : "0.0";
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-on-background font-sans antialiased selection:bg-primary-container selection:text-on-primary-container">
@@ -576,22 +633,24 @@ export default function AdminDashboardPage() {
             </div>
             
             <div className="flex flex-col gap-3 overflow-y-auto max-h-[300px]">
-              {[
-                { name: "Sofia Garcia", orders: 2, tag: "Strict Keto" },
-                { name: "James Wilson", orders: 5, tag: "High Protein" },
-                { name: "Ana Silva", orders: 1, tag: "Low Carb" },
-                { name: "Lucas Peeters", orders: 8, tag: "Strict Keto" }
-              ].map((customer) => (
-                <div key={customer.name} className="flex justify-between items-center py-1.5 border-b border-outline-variant/5 last:border-b-0">
-                  <div className="flex flex-col">
-                    <span className="font-sans font-semibold text-sm text-on-surface">{customer.name}</span>
-                    <span className="font-sans text-xs text-on-surface-variant">{customer.orders} Pedidos</span>
-                  </div>
-                  <span className="bg-[#ECFDF5] text-primary font-sans font-semibold text-[10px] px-2.5 py-0.5 rounded-full border border-primary-container/20">
-                    {customer.tag}
-                  </span>
+              {frequentCustomers.length === 0 ? (
+                <div className="py-12 text-center text-on-surface-variant flex flex-col items-center gap-1.5 opacity-75">
+                  <span className="material-symbols-outlined text-[36px] text-outline/30">people</span>
+                  <p className="font-sans text-xs">Aún no hay clientes registrados.</p>
                 </div>
-              ))}
+              ) : (
+                frequentCustomers.map((customer) => (
+                  <div key={customer.name} className="flex justify-between items-center py-1.5 border-b border-outline-variant/5 last:border-b-0">
+                    <div className="flex flex-col">
+                      <span className="font-sans font-semibold text-sm text-on-surface">{customer.name}</span>
+                      <span className="font-sans text-xs text-on-surface-variant">{customer.orders} {customer.orders === 1 ? "Pedido" : "Pedidos"}</span>
+                    </div>
+                    <span className="bg-[#ECFDF5] text-primary font-sans font-semibold text-[10px] px-2.5 py-0.5 rounded-full border border-primary-container/20">
+                      {customer.tag}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
 
             <button className="w-full bg-surface-container-low text-on-surface border border-outline-variant/20 font-sans font-semibold text-xs py-2.5 rounded-xl hover:bg-surface-container-high transition-colors mt-auto">

@@ -10,6 +10,14 @@ export default function Home() {
   const [cart, setCart] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
   const [successItem, setSuccessItem] = useState<string | null>(null);
+  const [dismissedClosedOverlay, setDismissedClosedOverlay] = useState<boolean>(false);
+
+  // Reset dismiss state if store status is opened
+  useEffect(() => {
+    if (storeStatus === "open") {
+      setDismissedClosedOverlay(false);
+    }
+  }, [storeStatus]);
 
   // Load state from localStorage on mount and sync on storage events
   useEffect(() => {
@@ -51,7 +59,28 @@ export default function Home() {
       }
     };
 
+    const incrementVisits = async () => {
+      if (!isConfigured) return;
+      if (sessionStorage.getItem("kb_visit_counted")) return;
+      try {
+        const { data } = await supabase
+          .from("config")
+          .select("value")
+          .eq("key", "total_visits")
+          .single();
+        const currentVisits = data ? parseInt(data.value, 10) : 0;
+        await supabase
+          .from("config")
+          .update({ value: (currentVisits + 1).toString() })
+          .eq("key", "total_visits");
+        sessionStorage.setItem("kb_visit_counted", "true");
+      } catch (e) {
+        console.error("Error incrementing visits in Supabase:", e);
+      }
+    };
+
     fetchStoreStatus();
+    incrementVisits();
 
     // Set up real-time subscription for store status
     let channel: any;
@@ -101,10 +130,6 @@ export default function Home() {
   };
 
   const addToCart = (itemName: string) => {
-    if (storeStatus === "closed") {
-      alert("Store is currently closed.");
-      return;
-    }
     const nextCart = [...cart, itemName];
     setCart(nextCart);
     localStorage.setItem("kb_cart", JSON.stringify(nextCart));
@@ -336,7 +361,7 @@ export default function Home() {
       </nav>
 
       {/* Closed Store Overlay */}
-      {storeStatus === "closed" && (
+      {storeStatus === "closed" && !dismissedClosedOverlay && (
         <div className="fixed inset-0 z-[100] bg-surface/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 transition-all duration-500">
           <div className="bg-surface-container-lowest w-full max-w-md rounded-xl p-6 sm:p-8 shadow-[0px_10px_40px_rgba(0,0,0,0.06)] text-center border border-outline-variant/10">
             <span className="material-symbols-outlined text-[48px] sm:text-[64px] text-tertiary mb-4 sm:mb-6">bedtime</span>
@@ -346,7 +371,7 @@ export default function Home() {
             </p>
             <button
               className="bg-surface-container-low text-on-surface border border-outline-variant/20 font-sans font-semibold text-sm px-6 py-2.5 sm:py-3 rounded-full hover:bg-surface-container-highest transition-colors active:scale-95"
-              onClick={toggleStoreStatus}
+              onClick={() => setDismissedClosedOverlay(true)}
             >
               Ver Menú
             </button>

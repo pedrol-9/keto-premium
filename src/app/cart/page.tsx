@@ -182,7 +182,7 @@ export default function CartPage() {
     const formattedTotal = formatCOP(subtotal);
 
     // Increment whatsapp redirects count
-    const redirects = parseInt(localStorage.getItem("whatsappRedirects") || "342", 10);
+    const redirects = parseInt(localStorage.getItem("whatsappRedirects") || "0", 10);
     localStorage.setItem("whatsappRedirects", (redirects + 1).toString());
 
     if (isConfigured) {
@@ -472,24 +472,7 @@ export default function CartPage() {
         </Link>
       </nav>
 
-      {/* Closed Store Overlay */}
-      {storeStatus === "closed" && (
-        <div className="fixed inset-0 z-[100] bg-surface/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 transition-all duration-500">
-          <div className="bg-surface-container-lowest w-full max-w-md rounded-xl p-6 sm:p-8 shadow-[0px_10px_40px_rgba(0,0,0,0.06)] text-center border border-outline-variant/10">
-            <span className="material-symbols-outlined text-[48px] sm:text-[64px] text-tertiary mb-4 sm:mb-6">bedtime</span>
-            <h2 className="font-display font-bold text-xl sm:text-2xl text-on-surface mb-2 sm:mb-3">Descansando</h2>
-            <p className="font-sans text-sm sm:text-base text-on-surface-variant mb-4 sm:mb-6 leading-relaxed">
-              Nuestra cocina está descansando. Abrimos pronto para ofrecerte lo mejor.
-            </p>
-            <Link
-              href="/"
-              className="inline-block bg-surface-container-low text-on-surface border border-outline-variant/20 font-sans font-semibold text-sm px-6 py-2.5 sm:py-3 rounded-full hover:bg-surface-container-highest transition-colors active:scale-95"
-            >
-              Ver Menú
-            </Link>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }
