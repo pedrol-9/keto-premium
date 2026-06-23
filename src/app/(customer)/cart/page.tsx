@@ -25,7 +25,7 @@ const ITEM_DETAILS = PRODUCTS.reduce((acc, product) => {
   return acc;
 }, {} as Record<string, { price: number; priceStr: string; category: string; categoryEn: string; imageUrl: string; tags: string[]; tagsEn: string[]; nameEn: string }>);
 
-const DEFAULT_IMAGE = "/bowl-cesar.png";
+const DEFAULT_IMAGE = "/dishes/bowl-cesar.png";
 
 export default function CartPage() {
   const [storeStatus, setStoreStatus] = useState<"open" | "closed">("open");

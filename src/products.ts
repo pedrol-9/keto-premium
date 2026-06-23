@@ -12,7 +12,7 @@ export const PRODUCTS: Product[] = [
     description:
       'Lechuga romana crujiente, pechuga de pollo a la plancha, crutones de almendras, parmesano rallado y aderezo César casero. Un clásico santandereano con toque keto.',
     price: 18000,
-    image: '/bowl-cesar.png',
+    image: '/dishes/bowl-cesar.png',
     tags: ['Keto', 'Alto Proteína', 'Popular'],
     calories: 420,
     protein: '38g',
@@ -28,7 +28,7 @@ export const PRODUCTS: Product[] = [
     description:
       'Salmón grillado sobre espinacas baby, hongos silvestres salteados, nueces tostadas, aguacate en láminas y aderezo de limón y hierbas. Del río a tu mesa.',
     price: 35000,
-    image: '/bowl-salmon-bosque.png',
+    image: '/dishes/bowl-salmon-bosque.png',
     tags: ['Premium', 'Omega-3', 'Keto'],
     calories: 510,
     protein: '42g',
@@ -44,7 +44,7 @@ export const PRODUCTS: Product[] = [
     description:
       'Huevo duro, pollo grillado, tocineta artesanal, aguacate, tomates cherry, queso azul y mesclun de lechugas. El combo perfecto ¡arrecho de sabor!',
     price: 22000,
-    image: '/bowl-cobb.png',
+    image: '/dishes/bowl-cobb.png',
     tags: ['Keto', 'Sin Gluten', 'Clásico'],
     calories: 480,
     protein: '36g',
@@ -60,7 +60,7 @@ export const PRODUCTS: Product[] = [
     description:
       'Pechuga de pollo jugosa bañada en pesto de albahaca fresca, piñones, tomates cherry asados, parmesano y rúgula. Sabor italiano con alma carchera.',
     price: 24000,
-    image: '/bowl-pesto.png',
+    image: '/dishes/bowl-pesto.png',
     tags: ['Keto', 'Sin Carbos', 'Bajo Calórico'],
     calories: 390,
     protein: '40g',
@@ -76,7 +76,7 @@ export const PRODUCTS: Product[] = [
     description:
       'Salmón glaseado en salsa teriyaki low-carb, arroz de coliflor, aguacate, pepino en cintas, edamame y semillas de ajonjolí. ¡Qué arrecho!',
     price: 36000,
-    image: '/bowl-teriyaki.png',
+    image: '/dishes/bowl-teriyaki.png',
     tags: ['Premium', 'Fusión', 'Omega-3', 'Keto'],
     calories: 530,
     protein: '44g',
