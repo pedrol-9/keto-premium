@@ -1,0 +1,70 @@
+// ============================================================
+// DATOS DE PRODUCTOS — Arrecho & Sano
+// 5 bowls keto premium para domicilios en San Gil
+// ============================================================
+
+import { Product } from '@/types';
+
+export const PRODUCTS: Product[] = [
+  {
+    id: 'bowl-cesar',
+    name: 'Bowl César Premium',
+    description:
+      'Lechuga romana crujiente, pechuga de pollo a la plancha, crutones de almendras, parmesano rallado y aderezo César casero. Un clásico santandereano con toque keto.',
+    price: 18000,
+    image: '/bowl-cesar.png',
+    tags: ['Keto', 'Alto Proteína', 'Popular'],
+    calories: 420,
+    protein: '38g',
+  },
+  {
+    id: 'bowl-salmon-bosque',
+    name: 'Bowl Salmón del Bosque',
+    description:
+      'Salmón grillado sobre espinacas baby, hongos silvestres salteados, nueces tostadas, aguacate en láminas y aderezo de limón y hierbas. Del río a tu mesa.',
+    price: 35000,
+    image: '/bowl-salmon-bosque.png',
+    tags: ['Premium', 'Omega-3', 'Keto'],
+    calories: 510,
+    protein: '42g',
+  },
+  {
+    id: 'bowl-cobb',
+    name: 'Keto Cobb Salad',
+    description:
+      'Huevo duro, pollo grillado, tocineta artesanal, aguacate, tomates cherry, queso azul y mesclun de lechugas. El combo perfecto ¡arrecho de sabor!',
+    price: 22000,
+    image: '/bowl-cobb.png',
+    tags: ['Keto', 'Sin Gluten', 'Clásico'],
+    calories: 480,
+    protein: '36g',
+  },
+  {
+    id: 'bowl-pesto',
+    name: 'Keto Bowl Pollo al Pesto',
+    description:
+      'Pechuga de pollo jugosa bañada en pesto de albahaca fresca, piñones, tomates cherry asados, parmesano y rúgula. Sabor italiano con alma carchera.',
+    price: 24000,
+    image: '/bowl-pesto.png',
+    tags: ['Keto', 'Sin Carbos', 'Bajo Calórico'],
+    calories: 390,
+    protein: '40g',
+  },
+  {
+    id: 'bowl-teriyaki',
+    name: 'Bowl Salmón Teriyaki Keto',
+    description:
+      'Salmón glaseado en salsa teriyaki low-carb, arroz de coliflor, aguacate, pepino en cintas, edamame y semillas de ajonjolí. ¡Qué arrecho!',
+    price: 36000,
+    image: '/bowl-teriyaki.png',
+    tags: ['Premium', 'Fusión', 'Omega-3', 'Keto'],
+    calories: 530,
+    protein: '44g',
+  },
+];
+
+// Número de WhatsApp del negocio (con código de país, sin +)
+export const WHATSAPP_NUMBER = '573133417707'; // <-- Cambiar al número real
+
+// PIN del panel de administración
+export const ADMIN_PIN = '000178';
