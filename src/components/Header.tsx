@@ -108,6 +108,7 @@ export default function Header() {
   const isCart = pathname === "/cart";
 
   return (
+    <>
     <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm border-b border-outline-variant/10">
       <div className="flex justify-between items-center px-4 sm:px-6 md:px-16 h-20 max-w-7xl mx-auto">
         {/* Logo / Headline */}
@@ -147,29 +148,10 @@ export default function Header() {
               </span>
             )}
           </Link>
-          <Link
-            href="/admin"
-            className="h-full flex items-center text-on-surface-variant hover:opacity-80 active:scale-95 transition-all"
-          >
-            {t.admin}
-          </Link>
         </nav>
 
         {/* Indicators and Language Toggle */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Language Switcher Button */}
-          <button
-            onClick={toggleLanguage}
-            className="font-sans font-semibold text-xs sm:text-sm hover:bg-surface-container-high transition-all active:scale-95 px-3 py-1.5 sm:py-2 rounded-full border border-outline-variant/30 flex items-center gap-1 bg-surface-container-low text-on-surface-variant"
-            aria-label="Switch language"
-          >
-            <span className="material-symbols-outlined text-[16px] sm:text-[18px]">language</span>
-            <span className="flex items-center gap-0.5">
-              <span className={language === "es" ? "text-primary font-bold" : "opacity-60"}>ES</span>
-              <span className="opacity-30">|</span>
-              <span className={language === "en" ? "text-primary font-bold" : "opacity-60"}>EN</span>
-            </span>
-          </button>
 
           {/* Store Status Indicator (Read-Only) */}
           <div
@@ -189,5 +171,20 @@ export default function Header() {
         </div>
       </div>
     </header>
+
+    {/* Floating Language Switcher */}
+    <button
+      onClick={toggleLanguage}
+      className="fixed bottom-24 md:bottom-8 right-4 md:right-8 z-[100] font-sans font-semibold text-xs sm:text-sm hover:opacity-90 transition-all active:scale-95 px-4 py-2 sm:py-2.5 rounded-full border border-outline-variant/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex items-center gap-1.5 bg-surface/70 backdrop-blur-xl text-on-surface-variant"
+      aria-label="Switch language"
+    >
+      <span className="material-symbols-outlined text-[18px] sm:text-[20px]">language</span>
+      <span className="flex items-center gap-1">
+        <span className={language === "es" ? "text-primary font-bold" : "opacity-70"}>ES</span>
+        <span className="opacity-30">|</span>
+        <span className={language === "en" ? "text-primary font-bold" : "opacity-70"}>EN</span>
+      </span>
+    </button>
+    </>
   );
 }
