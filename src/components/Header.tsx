@@ -113,8 +113,8 @@ export default function Header() {
       <div className="flex justify-between items-center px-4 sm:px-6 md:px-16 h-20 max-w-7xl mx-auto">
         {/* Logo / Headline */}
         <div className="flex items-center gap-2.5 sm:gap-4">
-          <Link href="/" className="flex items-center gap-1 hover:opacity-90 active:scale-95 transition-all">
-            <img src="/logo_sin_fondo.png" alt="KetoBoutique Logo" className="w-24 h-24 sm:w-[90px] sm:h-[90px] object-contain" />
+          <Link href="/" className="flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+            <img src="/logo_kb_nuevo.png" alt="KetoBoutique Logo" className="w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-full object-contain shadow-sm" />
             <h1 className="font-display font-bold tracking-tighter text-primary text-xl sm:text-2xl md:text-3xl">
               KetoBoutique
             </h1>

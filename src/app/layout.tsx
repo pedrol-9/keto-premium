@@ -17,6 +17,9 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "KetoBoutique - Premium Keto Experience",
   description: "Curated, macro-conscious culinary creations crafted with organic precision.",
+  icons: {
+    icon: "/logo_kb_nuevo.png",
+  },
 };
 
 export default function RootLayout({
