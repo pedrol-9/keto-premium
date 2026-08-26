@@ -1,6 +1,6 @@
 // ============================================================
-// DATOS DE PRODUCTOS — Arrecho & Sano
-// 5 bowls keto premium para domicilios en San Gil
+// DATOS DE PRODUCTOS — Keto Premium Delivery System
+// Bowls keto gourmet premium para domicilios
 // ============================================================
 
 import { Product } from '@/types';
@@ -10,7 +10,7 @@ export const PRODUCTS: Product[] = [
     id: 'bowl-cesar',
     name: 'Bowl César Premium',
     description:
-      'Lechuga romana crujiente, pechuga de pollo a la plancha, crutones de almendras, parmesano rallado y aderezo César casero. Un clásico santandereano con toque keto.',
+      'Lechuga romana crujiente, pechuga de pollo a la plancha, crutones de almendras, parmesano rallado y aderezo César casero. Un clásico gourmet con toque keto.',
     price: 18000,
     image: '/dishes/bowl-cesar.png',
     tags: ['Keto', 'Alto Proteína', 'Popular'],
@@ -19,7 +19,7 @@ export const PRODUCTS: Product[] = [
     packagingImages: [],
     nameEn: 'Premium Caesar Bowl',
     descriptionEn:
-      'Crispy romaine lettuce, grilled chicken breast, almond croutons, grated parmesan, and homemade Caesar dressing. A local classic with a keto twist.',
+      'Crispy romaine lettuce, grilled chicken breast, almond croutons, grated parmesan, and homemade Caesar dressing. A classic gourmet bowl with a keto twist.',
     tagsEn: ['Keto', 'High Protein', 'Popular'],
   },
   {
@@ -42,7 +42,7 @@ export const PRODUCTS: Product[] = [
     id: 'bowl-cobb',
     name: 'Keto Cobb Salad',
     description:
-      'Huevo duro, pollo grillado, tocineta artesanal, aguacate, tomates cherry, queso azul y mesclun de lechugas. El combo perfecto ¡arrecho de sabor!',
+      'Huevo duro, pollo grillado, tocineta artesanal, aguacate, tomates cherry, queso azul y mesclun de lechugas. El combo perfecto, lleno de textura y sabor inigualable.',
     price: 22000,
     image: '/dishes/bowl-cobb.png',
     tags: ['Keto', 'Sin Gluten', 'Clásico'],
@@ -51,14 +51,14 @@ export const PRODUCTS: Product[] = [
     packagingImages: [],
     nameEn: 'Keto Cobb Salad',
     descriptionEn:
-      'Hard-boiled egg, grilled chicken, craft bacon, avocado, cherry tomatoes, blue cheese, and mixed salad greens. The perfect combo, bursting with flavor!',
+      'Hard-boiled egg, grilled chicken, craft bacon, avocado, cherry tomatoes, blue cheese, and mixed salad greens. The perfect combo, bursting with flavor and clean fats.',
     tagsEn: ['Keto', 'Gluten-Free', 'Classic'],
   },
   {
     id: 'bowl-pesto',
     name: 'Keto Bowl Pollo al Pesto',
     description:
-      'Pechuga de pollo jugosa bañada en pesto de albahaca fresca, piñones, tomates cherry asados, parmesano y rúgula. Sabor italiano con alma carchera.',
+      'Pechuga de pollo jugosa bañada en pesto de albahaca fresca, piñones, tomates cherry asados, parmesano y rúgula. Sabor italiano con un toque artesanal contemporáneo.',
     price: 24000,
     image: '/dishes/bowl-pesto.png',
     tags: ['Keto', 'Sin Carbos', 'Bajo Calórico'],
@@ -67,14 +67,14 @@ export const PRODUCTS: Product[] = [
     packagingImages: [],
     nameEn: 'Keto Pesto Chicken Bowl',
     descriptionEn:
-      'Juicy chicken breast tossed in fresh basil pesto, pine nuts, roasted cherry tomatoes, parmesan, and arugula. Italian flavor with a local soul.',
+      'Juicy chicken breast tossed in fresh basil pesto, pine nuts, roasted cherry tomatoes, parmesan, and arugula. Italian culinary heritage with an artisanal finish.',
     tagsEn: ['Keto', 'Zero Carbs', 'Low Calorie'],
   },
   {
     id: 'bowl-teriyaki',
     name: 'Bowl Salmón Teriyaki Keto',
     description:
-      'Salmón glaseado en salsa teriyaki low-carb, arroz de coliflor, aguacate, pepino en cintas, edamame y semillas de ajonjolí. ¡Qué arrecho!',
+      'Salmón glaseado en salsa teriyaki low-carb, arroz de coliflor, aguacate, pepino en cintas, edamame y semillas de ajonjolí. Una combinación perfecta entre frescura y textura.',
     price: 36000,
     image: '/dishes/bowl-teriyaki.png',
     tags: ['Premium', 'Fusión', 'Omega-3', 'Keto'],
@@ -83,7 +83,7 @@ export const PRODUCTS: Product[] = [
     packagingImages: [],
     nameEn: 'Keto Teriyaki Salmon Bowl',
     descriptionEn:
-      'Glazed salmon in low-carb teriyaki sauce, cauliflower rice, avocado, cucumber ribbons, edamame, and sesame seeds. Simply amazing!',
+      'Glazed salmon in low-carb teriyaki sauce, cauliflower rice, avocado, cucumber ribbons, edamame, and sesame seeds. An exquisite balance of freshness and texture.',
     tagsEn: ['Premium', 'Fusion', 'Omega-3', 'Keto'],
   },
 ];

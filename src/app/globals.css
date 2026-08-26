@@ -32,6 +32,7 @@
   
   --font-sans: var(--font-inter);
   --font-display: var(--font-manrope);
+  --font-serif: var(--font-cormorant);
   
   --radius-xl: 1.5rem; /* 24px */
   --radius-lg: 1rem;   /* 16px */

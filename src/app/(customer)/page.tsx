@@ -194,17 +194,20 @@ export default function Home() {
       <main className="max-w-7xl mx-auto pt-28 pb-32 px-6 md:px-16 flex-1 w-full">
         {/* Hero Section */}
         <section className="mb-16 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="md:w-1/2 flex flex-col gap-4">
+          <div className="md:w-1/2 flex flex-col gap-3">
+            <p className="font-serif italic text-xl md:text-2xl text-primary font-semibold tracking-wide">
+              &ldquo;{t.slogan}&rdquo;
+            </p>
             <h2 className="font-display font-bold text-4xl md:text-5xl text-on-surface leading-tight tracking-tight">
               {t.heroTitle}
             </h2>
-            <p className="font-sans text-lg text-on-surface-variant max-w-md mx-auto md:mx-0 leading-relaxed">
+            <p className="font-sans text-base md:text-lg text-on-surface-variant max-w-md mx-auto md:mx-0 leading-relaxed">
               {t.heroDesc}
             </p>
           </div>
           <div className="w-full md:w-1/2">
             <div
-              className="w-full h-64 md:h-80 rounded-xl overflow-hidden shadow-[0px_10px_40px_rgba(0,0,0,0.06)] relative bg-surface-container-high bg-cover bg-center"
+              className="w-full h-64 md:h-80 rounded-2xl overflow-hidden shadow-[0px_10px_40px_rgba(0,0,0,0.06)] relative bg-surface-container-high bg-cover bg-center ring-1 ring-black/5"
               style={{
                 backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuBYpKpJ4awhfJ-3cCrh5KH1lOvl7oy9I-qWEMyzbviFnD6y90O6-MRcBkTCyZWwvS_OxEofMqxIftwxFET_6GOL9kd1FP-_KItAa9igbQGgpwRkNtV8zoIwRYfNo1pfKhtfVFfDUDm6oqCxHcG_1w2dHQkvBf5ap9ennqYF9_uGFR_fAO9P12NGpP5p80aHRnBoikcWkIrfhNdU3ibwd_NRKNPd0Kblgrfj6huRYExGVVRYpscAoHrEe3MwSdr_ddEA2-CkhbS05Te6')`,
               }}
@@ -307,6 +310,21 @@ export default function Home() {
             </article>
           ))}
         </div>
+
+        {/* Brand Philosophy Banner */}
+        <section className="mt-20 p-8 sm:p-12 rounded-3xl bg-surface-container-low/70 border border-outline-variant/15 text-center relative overflow-hidden shadow-xs">
+          <div className="max-w-2xl mx-auto flex flex-col items-center gap-3">
+            <span className="material-symbols-outlined text-primary text-3xl opacity-75">
+              spa
+            </span>
+            <p className="font-serif italic text-2xl sm:text-3xl text-on-surface font-semibold tracking-wide">
+              &ldquo;{t.slogan}&rdquo;
+            </p>
+            <p className="font-sans text-xs sm:text-sm text-on-surface-variant max-w-lg leading-relaxed">
+              {t.heroDesc}
+            </p>
+          </div>
+        </section>
       </main>
 
       {/* BottomNavBar (Mobile Only) */}

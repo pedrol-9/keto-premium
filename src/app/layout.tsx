@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Manrope } from "next/font/google";
+import { Inter, Manrope, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -14,9 +14,17 @@ const manrope = Manrope({
   display: "swap",
 });
 
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "KetoBoutique - Premium Keto Experience",
-  description: "Curated, macro-conscious culinary creations crafted with organic precision.",
+  title: "KetoBoutique - Come con propósito, disfruta sin límites",
+  description: "Creaciones culinarias cetogénicas premium diseñadas para controlar tus macros con precisión orgánica.",
   icons: {
     icon: "/logo_kb_nuevo.png",
   },
@@ -29,8 +37,8 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      className={`${inter.variable} ${manrope.variable} h-full antialiased`}
+      lang="es"
+      className={`${inter.variable} ${manrope.variable} ${cormorant.variable} h-full antialiased`}
     >
       <head>
         <link
