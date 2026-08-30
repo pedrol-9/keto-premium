@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase, isConfigured } from "@/lib/supabase";
+import BrandLogo from "@/components/BrandLogo";
 
 interface Order {
   id: string;
@@ -378,14 +379,9 @@ export default function AdminDashboardPage() {
       {/* TopAppBar */}
       <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm border-b border-outline-variant/10">
         <div className="flex justify-between items-center px-4 sm:px-6 md:px-16 h-20 max-w-7xl mx-auto">
-          {/* Logo / Headline and Menu icon */}
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link href="/" className="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center p-1.5 sm:p-2 rounded-full hover:bg-surface-container-low">
-              <span className="material-symbols-outlined text-[26px] sm:text-[30px]">restaurant_menu</span>
-            </Link>
-            <h1 className="font-display font-bold tracking-tighter text-primary text-xl sm:text-2xl md:text-3xl">
-              KetoBoutique
-            </h1>
+          {/* Logo / Headline */}
+          <div className="flex items-center">
+            <BrandLogo />
           </div>
 
           {/* Desktop Navigation Links */}

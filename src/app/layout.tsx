@@ -26,7 +26,12 @@ export const metadata: Metadata = {
   title: "KetoBoutique - Come con propósito, disfruta sin límites",
   description: "Creaciones culinarias cetogénicas premium diseñadas para controlar tus macros con precisión orgánica.",
   icons: {
-    icon: "/logo_kb_nuevo.png",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
   },
 };
 

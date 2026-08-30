@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { supabase, isConfigured } from "@/lib/supabase";
 import { Language, TRANSLATIONS } from "@/locales";
+import BrandLogo from "@/components/BrandLogo";
 
 export default function Header() {
   const pathname = usePathname();
@@ -112,16 +113,8 @@ export default function Header() {
     <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm border-b border-outline-variant/10">
       <div className="flex justify-between items-center px-4 sm:px-6 md:px-16 h-20 max-w-7xl mx-auto">
         {/* Logo / Headline */}
-        <div className="flex items-center gap-2.5 sm:gap-4">
-          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 hover:opacity-90 active:scale-95 transition-all group">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden shadow-sm border border-emerald-500/20 bg-surface-container-lowest p-1 flex items-center justify-center group-hover:border-emerald-500/40 transition-all">
-              <img src="/logo_kb_nuevo.png" alt="KetoBoutique Logo" className="w-full h-full object-contain" />
-            </div>
-            <h1 className="font-display font-extrabold tracking-tight text-xl sm:text-2xl md:text-3xl">
-              <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">Keto</span>
-              <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">Boutique</span>
-            </h1>
-          </Link>
+        <div className="flex items-center">
+          <BrandLogo />
         </div>
 
         {/* Desktop Navigation Links */}
