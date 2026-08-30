@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ADMIN_PIN } from "@/products";
@@ -18,7 +18,7 @@ export default function AdminLoginPage() {
     console.log("AdminLoginPage mounted/updated. pin:", pin, "CORRECT_PIN:", CORRECT_PIN, "isError:", isError, "isSuccess:", isSuccess);
   }, [pin, CORRECT_PIN, isError, isSuccess]);
 
-  const handleInput = (val: string) => {
+  const handleInput = useCallback((val: string) => {
     console.log("handleInput triggered with val:", val, "current pin:", pin);
     if (isError || isSuccess) return;
 
@@ -44,9 +44,9 @@ export default function AdminLoginPage() {
         }
       }
     }
-  };
+  }, [pin, isError, isSuccess, CORRECT_PIN, router]);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     console.log("handleDelete triggered");
     if (isError || isSuccess) {
       console.log("Delete ignored because isError or isSuccess is true");
@@ -57,7 +57,7 @@ export default function AdminLoginPage() {
       console.log("Deleting last character, new pin state:", nextPin);
       setPin(nextPin);
     }
-  };
+  }, [pin, isError, isSuccess]);
 
   // Physical keyboard support
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function AdminLoginPage() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [pin, isError, isSuccess]);
+  }, [handleInput, handleDelete]);
 
   return (
     <div className="bg-background min-h-screen flex flex-col items-center justify-center font-sans text-on-surface antialiased overflow-hidden selection:bg-primary-container selection:text-on-primary-container relative">

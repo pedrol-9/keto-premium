@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galería de Logos Generados — KetoBoutique</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1411;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --emerald: #059669;
+      --gold: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 40px 20px;
+      background-image: 
+        radial-gradient(circle at 20% 15%, rgba(5, 150, 105, 0.18), transparent 40%),
+        radial-gradient(circle at 80% 30%, rgba(245, 158, 11, 0.12), transparent 45%);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(5, 150, 105, 0.15);
+      border: 1px solid rgba(5, 150, 105, 0.3);
+      color: #34d399;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.75rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 30%, #34d399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #34d399;
+      margin: 40px 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(52, 211, 153, 0.4);
+      box-shadow: 0 16px 32px -10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(5, 150, 105, 0.2);
+    }
+
+    .card.favorite {
+      border-color: rgba(245, 158, 11, 0.6);
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.2);
+    }
+
+    .card-img-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #fdfbf7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover .card-img-wrap img {
+      transform: scale(1.03);
+    }
+
+    .card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-grow: 1;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-tag {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(5, 150, 105, 0.2);
+      color: #34d399;
+    }
+
+    .card-tag.gold {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+    }
+
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .path-box {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 11px;
+      color: #94a3b8;
+      word-break: break-all;
+      margin-top: auto;
+    }
+
+    .location-banner {
+      background: rgba(5, 150, 105, 0.12);
+      border: 1px solid rgba(5, 150, 105, 0.3);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .location-banner strong {
+      color: #34d399;
+      font-size: 1.1rem;
+    }
+
+    .location-path {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-family: monospace;
+      color: #f1f5f9;
+      font-size: 13px;
+      user-select: all;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Identidad de Marca • KetoBoutique</div>
+      <h1>Propuestas y Evoluciones de Logotipo</h1>
+      <p class="subtitle">Todas las opciones visuales generadas durante la sesión de diseño, organizadas y disponibles en tu disco local.</p>
+    </header>
+
+    <div class="location-banner">
+      <strong>📁 Ubicación de los archivos en tu computador:</strong>
+      <div class="location-path">c:\dev\keto-premium\logos_generados\</div>
+      <p style="font-size: 12px; color: #94a3b8;">También puedes ver este catálogo abriendo directamente: <code>c:\dev\keto-premium\ver_logos.html</code> en tu navegador.</p>
+    </div>
+
+    <!-- SECCIÓN 1: EVOLUCIÓN DEL AGUACATE -->
+    <h2 class="section-title">🥑 1. Evolución del Aguacate Boutique</h2>
+    <div class="grid">
+      
+      <!-- Opcion Aguacate Sin Ramita -->
+      <div class="card favorite">
+        <div class="card-img-wrap">
+          <img src="./logos_generados/kb_logo_clean_no_stem_1788102511149.jpg" alt="Aguacate Minimalista Sin Ramita">
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <span class="card-tag gold">Última versión</span>
+            <span style="font-size: 12px; color: #fbbf24;">★ Minimalista</span>
+          </div>
+          <h3 class="card-title">Aguacate Puro (Sin Ramita ni Sonrisa)</h3>
+          <p class="card-desc">Silueta de fruta 100% limpia, redondeada y continua. Núcleo esférico brillante con reflejo dorado sutil.</p>
+          <div class="path-box">logos_generados/kb_logo_clean_no_stem_1788102511149.jpg</div>
+        </div>
+      </div>
+
+      <!-- Opcion Aguacate Con Ramita Minimalista -->
+      <div class="card favorite">
+        <div class="card-img-wrap">
+          <img src="./logos_generados/kb_logo_perfect_avocado_clean_1788102452060.jpg" alt="Aguacate Con Dos Hojitas">
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <span class="card-tag gold">Favorito</span>
+            <span style="font-size: 12px; color: #34d399;">Botánico Limpio</span>
+          </div>
+          <h3 class="card-title">Aguacate con 2 Hojitas (Sin Sonrisa)</h3>
+          <p class="card-desc">La versión perfecta con el tallo simple de 2 hojitas en la parte superior y semilla dorada pura sin boca.</p>
+          <div class="path-box">logos_generados/kb_logo_perfect_avocado_clean_1788102452060.jpg</div>
+        </div>
+      </div>
+
+      <!-- Opcion Aguacate Original Alegre -->
+      <div class="card">
+        <div class="card-img-wrap">
+          <img src="./logos_generados/kb_logo_option1_joyful_avocado_1788102198872.jpg" alt="Aguacate Sonriente Original">
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <span class="card-tag">Versión Original</span>
+          </div>
+          <h3 class="card-title">Aguacate Sonriente Original</h3>
+          <p class="card-desc">La primera propuesta con el trazo de sonrisa curva en el carozo dorado.</p>
+          <div class="path-box">logos_generados/kb_logo_option1_joyful_avocado_1788102198872.jpg</div>
+        </div>
+      </div>
+
+      <!-- Opcion Aguacate Botanico Corona V2 -->
+      <div class="card">
+        <div class="card-img-wrap">
+          <img src="./logos_generados/kb_logo_v2_vibrant_avocado_1788102323437.jpg" alt="Aguacate Corona Botánica">
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <span class="card-tag">Variación V2</span>
+          </div>
+          <h3 class="card-title">Aguacate Corona Botánica Multicromática</h3>
+          <p class="card-desc">Variante con corona densa de hojas esmeralda y doradas en la parte superior.</p>
+          <div class="path-box">logos_generados/kb_logo_v2_vibrant_avocado_1788102323437.jpg</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SECCIÓN 2: MONOGRAMAS Y OTRAS PROPUESTAS -->
+    <h2 class="section-title">✨ 2. Otras Propuestas de Identidad</h2>
+    <div class="grid">
+
+      <!-- Opcion Monograma KB Sin Rama (NUEVO) -->
+      <div class="card favorite">
+        <div class="card-img-wrap">
+          <img src="./logos_generados/kb_monogram_clean_no_branch_1788102921006.jpg" alt="Monograma KB Cinta Sin Rama">
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <span class="card-tag gold">Nueva Versión</span>
+            <span style="font-size: 12px; color: #fbbf24;">★ Cinta Limpia</span>
+          </div>
+          <h3 class="card-title">Cinta Fluida 'KB' Pura (Sin Ramita)</h3>
+          <p class="card-desc">Cinta ribbon volumétrica con degradados de esmeralda, lima, melocotón y oro sin la ramita de hojas.</p>
+          <div class="path-box">logos_generados/kb_monogram_clean_no_branch_1788102921006.jpg</div>
+        </div>
+      </div>
+
+      <!-- Opcion Monograma Ribbon V2 con Rama -->
+      <div class="card">
+        <div class="card-img-wrap">
+          <img src="./logos_generados/kb_logo_v2_vibrant_monogram_1788102372098.jpg" alt="Monograma KB Cinta">
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <span class="card-tag">Con Brote</span>
+          </div>
+          <h3 class="card-title">Cinta Fluida 'KB' & Brote Esmeralda</h3>
+          <p class="card-desc">Versión anterior con el brote de hojas en la parte superior derecha.</p>
+          <div class="path-box">logos_generados/kb_logo_v2_vibrant_monogram_1788102372098.jpg</div>
+        </div>
+      </div>
+
+      <!-- Opcion Sol Botanico V2 -->
+      <div class="card">
+        <div class="card-img-wrap">
+          <img src="./logos_generados/kb_logo_v2_vibrant_sunburst_1788102346910.jpg" alt="Sol Botánico y Tenedor">
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <span class="card-tag">Vitalidad</span>
+          </div>
+          <h3 class="card-title">Sol Botánico Radiante & Tenedor</h3>
+          <p class="card-desc">Emblema circular con amanecer dorado, hojas culinarias y silueta gourmet central.</p>
+          <div class="path-box">logos_generados/kb_logo_v2_vibrant_sunburst_1788102346910.jpg</div>
+        </div>
+      </div>
+
+      <!-- Opcion Campana Gourmet Cloche -->
+      <div class="card">
+        <div class="card-img-wrap">
+          <img src="./logos_generados/kb_logo_v2_vibrant_cloche_1788102397360.jpg" alt="Campana Gourmet">
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <span class="card-tag">Gourmet</span>
+          </div>
+          <h3 class="card-title">Campana Dorada & Menta</h3>
+          <p class="card-desc">Sello de alta cocina con cloche dorada, destellos estelares y hojas de menta orgánica.</p>
+          <div class="path-box">logos_generados/kb_logo_v2_vibrant_cloche_1788102397360.jpg</div>
+        </div>
+      </div>
+
+      <!-- Opcion Monograma KB Original con Sonrisa -->
+      <div class="card">
+        <div class="card-img-wrap">
+          <img src="./logos_generados/kb_logo_option3_monogram_ribbon_1788102228906.jpg" alt="Monograma KB Sonriente">
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <span class="card-tag">Original</span>
+          </div>
+          <h3 class="card-title">Monograma 'KB' (Versión Sonriente)</h3>
+          <p class="card-desc">Primera versión de la cinta KB con curva alegre y brote ascendente.</p>
+          <div class="path-box">logos_generados/kb_logo_option3_monogram_ribbon_1788102228906.jpg</div>
+        </div>
+      </div>
+
+      <!-- Opcion Sol Original con Sonrisa -->
+      <div class="card">
+        <div class="card-img-wrap">
+          <img src="./logos_generados/kb_logo_option2_botanical_sunburst_1788102214003.jpg" alt="Sol Sonriente Original">
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <span class="card-tag">Original</span>
+          </div>
+          <h3 class="card-title">Sol Sonriente & Hojas Original</h3>
+          <p class="card-desc">Primera versión del sol naciente con rostro alegre y tenedor botánico.</p>
+          <div class="path-box">logos_generados/kb_logo_option2_botanical_sunburst_1788102214003.jpg</div>
+        </div>
+      </div>
+
+      <!-- Opcion Campana Original con Sonrisa -->
+      <div class="card">
+        <div class="card-img-wrap">
+          <img src="./logos_generados/kb_logo_option4_gourmet_joy_1788102247702.jpg" alt="Campana Sonriente Original">
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <span class="card-tag">Original</span>
+          </div>
+          <h3 class="card-title">Campana Gourmet Sonriente Original</h3>
+          <p class="card-desc">Primera versión de la campana de servicio con sonrisa y hojita.</p>
+          <div class="path-box">logos_generados/kb_logo_option4_gourmet_joy_1788102247702.jpg</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

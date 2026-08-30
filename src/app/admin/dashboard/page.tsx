@@ -20,110 +20,111 @@ interface AccountingData {
   manualIncome: string;
 }
 
+const DEFAULT_OFFLINE_ORDERS: Order[] = [
+  {
+    id: "ord-883719",
+    customerName: "Elena Rodriguez",
+    details: "1x Bowl Salmón del Bosque, 1x Bowl César Premium",
+    time: "Hace 5 minutos",
+    address: "Calle 127 # 19-45, Apto 502",
+    total: "$53.000 COP"
+  },
+  {
+    id: "ord-293817",
+    customerName: "David Chen",
+    details: "2x Keto Cobb Salad",
+    time: "Hace 12 minutos",
+    address: "Carrera 7 # 72-10, Torre B",
+    total: "$44.000 COP"
+  },
+  {
+    id: "ord-482019",
+    customerName: "Maria Santos",
+    details: "1x Bowl Salmón Teriyaki Keto, 1x Keto Bowl Pollo al Pesto",
+    time: "Hace 28 minutos",
+    address: "Calle 85 # 11-32",
+    total: "$60.000 COP"
+  }
+];
+
+const DEFAULT_OFFLINE_CUSTOMERS = [
+  { name: "Sofia Garcia", orders: 2, tag: "Strict Keto" },
+  { name: "James Wilson", orders: 5, tag: "High Protein" },
+  { name: "Ana Silva", orders: 1, tag: "Low Carb" },
+  { name: "Lucas Peeters", orders: 8, tag: "Strict Keto" }
+];
+
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [storeStatus, setStoreStatus] = useState<"open" | "closed">("open");
-  const [whatsappRedirects, setWhatsappRedirects] = useState<number>(342); // Default starting visits/redirects
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [accounting, setAccounting] = useState<AccountingData>({
-    initialCash: "",
-    expenses: "",
-    manualIncome: "",
+  const [isAuthenticated] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("kb_admin_authenticated") === "true";
+    }
+    return false;
+  });
+  const [storeStatus, setStoreStatus] = useState<"open" | "closed">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("kb_store_status") as "open" | "closed";
+      if (saved) return saved;
+    }
+    return "open";
+  });
+  const [whatsappRedirects, setWhatsappRedirects] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("whatsappRedirects");
+      if (saved) return parseInt(saved, 10);
+    }
+    return 342;
+  });
+  const [orders, setOrders] = useState<Order[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("kb_orders");
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          return [];
+        }
+      }
+    }
+    return !isConfigured ? DEFAULT_OFFLINE_ORDERS : [];
+  });
+  const [accounting, setAccounting] = useState<AccountingData>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("kb_accounting");
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          // ignore
+        }
+      }
+    }
+    return {
+      initialCash: "",
+      expenses: "",
+      manualIncome: "",
+    };
   });
   const [accountingStatus, setAccountingStatus] = useState<string | null>(null);
-  const [confirmedCount, setConfirmedCount] = useState<number>(0);
+  const [confirmedCount, setConfirmedCount] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("kb_confirmed_orders_count");
+      if (saved) return parseInt(saved, 10);
+    }
+    return 0;
+  });
   const [totalVisits, setTotalVisits] = useState<number>(0);
-  const [frequentCustomers, setFrequentCustomers] = useState<{name: string, orders: number, tag: string}[]>([]);
+  const [frequentCustomers, setFrequentCustomers] = useState<{name: string, orders: number, tag: string}[]>(() => {
+    return !isConfigured ? DEFAULT_OFFLINE_CUSTOMERS : [];
+  });
 
   // Authenticate and load dashboard data
   useEffect(() => {
     const auth = localStorage.getItem("kb_admin_authenticated");
     if (auth !== "true") {
-      setIsAuthenticated(false);
       router.push("/admin");
       return;
-    }
-    setIsAuthenticated(true);
-
-    // 1. Load store status
-    const savedStatus = localStorage.getItem("kb_store_status") as "open" | "closed";
-    if (savedStatus) {
-      setStoreStatus(savedStatus);
-    }
-
-    // Load whatsapp redirects
-    const savedRedirects = localStorage.getItem("whatsappRedirects");
-    if (savedRedirects) {
-      setWhatsappRedirects(parseInt(savedRedirects, 10));
-    } else {
-      setWhatsappRedirects(0);
-    }
-
-    // Load confirmed count
-    const savedConfirmedCount = localStorage.getItem("kb_confirmed_orders_count");
-    if (savedConfirmedCount) {
-      setConfirmedCount(parseInt(savedConfirmedCount, 10));
-    }
-
-    // 3. Load orders
-    const savedOrders = localStorage.getItem("kb_orders");
-    if (savedOrders) {
-      try {
-        setOrders(JSON.parse(savedOrders));
-      } catch (e) {
-        console.error(e);
-      }
-    } else if (!isConfigured) {
-      // Seed default mock orders if empty
-      const defaultOrders: Order[] = [
-        {
-          id: "ord-883719",
-          customerName: "Elena Rodriguez",
-          details: "1x Bowl Salmón del Bosque, 1x Bowl César Premium",
-          time: "Hace 5 minutos",
-          address: "Calle 127 # 19-45, Apto 502",
-          total: "$53.000 COP"
-        },
-        {
-          id: "ord-293817",
-          customerName: "David Chen",
-          details: "2x Keto Cobb Salad",
-          time: "Hace 12 minutos",
-          address: "Carrera 7 # 72-10, Torre B",
-          total: "$44.000 COP"
-        },
-        {
-          id: "ord-482019",
-          customerName: "Maria Santos",
-          details: "1x Bowl Salmón Teriyaki Keto, 1x Keto Bowl Pollo al Pesto",
-          time: "Hace 28 minutos",
-          address: "Calle 85 # 11-32",
-          total: "$60.000 COP"
-        }
-      ];
-      localStorage.setItem("kb_orders", JSON.stringify(defaultOrders));
-      setOrders(defaultOrders);
-    }
-
-    // 4. Load accounting box
-    const savedAccounting = localStorage.getItem("kb_accounting");
-    if (savedAccounting) {
-      try {
-        setAccounting(JSON.parse(savedAccounting));
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    // 5. Load frequent clients placeholder only if offline
-    if (!isConfigured) {
-      setFrequentCustomers([
-        { name: "Sofia Garcia", orders: 2, tag: "Strict Keto" },
-        { name: "James Wilson", orders: 5, tag: "High Protein" },
-        { name: "Ana Silva", orders: 1, tag: "Low Carb" },
-        { name: "Lucas Peeters", orders: 8, tag: "Strict Keto" }
-      ]);
     }
 
     // --- Supabase Fetches ---
@@ -214,8 +215,8 @@ export default function AdminDashboardPage() {
     fetchSupabaseData();
 
     // Set up realtime channel subscription for orders & configs
-    let channelConfig: any;
-    let channelOrders: any;
+    let channelConfig: ReturnType<typeof supabase.channel> | null = null;
+    let channelOrders: ReturnType<typeof supabase.channel> | null = null;
 
     if (isConfigured) {
       channelConfig = supabase

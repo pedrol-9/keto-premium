@@ -24,13 +24,6 @@ export default function Home() {
       setActiveImage(product.image);
     };
 
-  // Reset dismiss state if store status is opened
-  useEffect(() => {
-    if (storeStatus === "open") {
-      setDismissedClosedOverlay(false);
-    }
-  }, [storeStatus]);
-
   // Listen to Escape key to close modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -112,7 +105,7 @@ export default function Home() {
     incrementVisits();
 
     // Set up real-time subscription for store status
-    let channel: any;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
     if (isConfigured) {
       channel = supabase
         .channel("store_status_changes")
@@ -141,30 +134,6 @@ export default function Home() {
     };
   }, []);
 
-  const toggleStoreStatus = async () => {
-    const nextStatus = storeStatus === "open" ? "closed" : "open";
-    setStoreStatus(nextStatus);
-    localStorage.setItem("kb_store_status", nextStatus);
-
-    if (isConfigured) {
-      try {
-        await supabase
-          .from("config")
-          .update({ value: nextStatus })
-          .eq("key", "store_status");
-      } catch (e) {
-        console.error("Error updating store status in Supabase:", e);
-      }
-    }
-  };
-
-  const toggleLanguage = () => {
-    const nextLang: Language = language === "es" ? "en" : "es";
-    setLanguage(nextLang);
-    localStorage.setItem("kb_lang", nextLang);
-    window.dispatchEvent(new Event("storage"));
-  };
-
   const addToCart = (itemName: string) => {
     const nextCart = [...cart, itemName];
     setCart(nextCart);
@@ -188,17 +157,28 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-on-background font-sans antialiased selection:bg-primary-container selection:text-on-primary-container">
+    <div className="flex flex-col min-h-screen bg-background text-on-background font-sans antialiased selection:bg-primary-container selection:text-on-primary-container relative overflow-x-hidden">
+
+      {/* Ambient Joyful & Vital Glows */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px]" />
+        <div className="absolute top-1/4 -right-24 w-96 h-96 bg-amber-400/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/3 left-10 w-80 h-80 bg-teal-400/8 rounded-full blur-[100px]" />
+      </div>
 
       {/* Main Content Canvas */}
-      <main className="max-w-7xl mx-auto pt-28 pb-32 px-6 md:px-16 flex-1 w-full">
+      <main className="max-w-7xl mx-auto pt-28 pb-32 px-6 md:px-16 flex-1 w-full relative z-10">
         {/* Hero Section */}
         <section className="mb-16 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="md:w-1/2 flex flex-col gap-3">
-            <p className="font-serif italic text-xl md:text-2xl text-primary font-semibold tracking-wide">
+          <div className="md:w-1/2 flex flex-col gap-3.5">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 text-xs font-bold w-fit mx-auto md:mx-0 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Boutique Keto Cuisine
+            </div>
+            <p className="font-serif italic text-xl md:text-2xl font-semibold tracking-wide bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
               &ldquo;{t.slogan}&rdquo;
             </p>
-            <h2 className="font-display font-bold text-4xl md:text-5xl text-on-surface leading-tight tracking-tight">
+            <h2 className="font-display font-black text-4xl md:text-5xl text-on-surface leading-tight tracking-tight">
               {t.heroTitle}
             </h2>
             <p className="font-sans text-base md:text-lg text-on-surface-variant max-w-md mx-auto md:mx-0 leading-relaxed">
@@ -207,80 +187,82 @@ export default function Home() {
           </div>
           <div className="w-full md:w-1/2">
             <div
-              className="w-full h-64 md:h-80 rounded-2xl overflow-hidden shadow-[0px_10px_40px_rgba(0,0,0,0.06)] relative bg-surface-container-high bg-cover bg-center ring-1 ring-black/5"
+              className="w-full h-64 md:h-80 rounded-3xl overflow-hidden shadow-[0px_16px_40px_rgba(5,150,105,0.08)] relative bg-surface-container-high bg-cover bg-center ring-1 ring-emerald-500/10"
               style={{
                 backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuBYpKpJ4awhfJ-3cCrh5KH1lOvl7oy9I-qWEMyzbviFnD6y90O6-MRcBkTCyZWwvS_OxEofMqxIftwxFET_6GOL9kd1FP-_KItAa9igbQGgpwRkNtV8zoIwRYfNo1pfKhtfVFfDUDm6oqCxHcG_1w2dHQkvBf5ap9ennqYF9_uGFR_fAO9P12NGpP5p80aHRnBoikcWkIrfhNdU3ibwd_NRKNPd0Kblgrfj6huRYExGVVRYpscAoHrEe3MwSdr_ddEA2-CkhbS05Te6')`,
               }}
-            ></div>
+            >
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+            </div>
           </div>
         </section>
 
         {/* Nutrition Filter Chips */}
-        <div className="flex gap-4 overflow-x-auto pb-4 mb-8 scrollbar-none">
+        <div className="flex gap-3 overflow-x-auto pb-4 mb-8 scrollbar-none">
           <button
             onClick={() => setActiveCategory("Todos")}
-            className={`px-5 py-2.5 rounded-full font-sans font-semibold text-sm whitespace-nowrap transition-all ${
+            className={`px-5 py-2.5 rounded-full font-sans font-bold text-sm whitespace-nowrap transition-all ${
               activeCategory === "Todos"
-                ? "bg-primary text-on-primary shadow-sm"
-                : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
+                ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/20"
+                : "bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-low border border-outline-variant/15"
             }`}
           >
             {t.categoryAll}
           </button>
           <button
             onClick={() => setActiveCategory("Keto")}
-            className={`px-5 py-2.5 rounded-full font-sans font-semibold text-sm whitespace-nowrap transition-all border border-transparent ${
+            className={`px-5 py-2.5 rounded-full font-sans font-bold text-sm whitespace-nowrap transition-all border ${
               activeCategory === "Keto"
-                ? "bg-primary text-on-primary shadow-sm"
-                : "bg-[#ECFDF5] text-[#059669] hover:border-[#059669]"
+                ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/20 border-transparent"
+                : "bg-emerald-50 text-emerald-700 border-emerald-200 hover:border-emerald-400"
             }`}
           >
-            Keto
+            🥑 Keto
           </button>
           <button
             onClick={() => setActiveCategory("Alto Proteína")}
-            className={`px-5 py-2.5 rounded-full font-sans font-semibold text-sm whitespace-nowrap transition-all border border-transparent ${
+            className={`px-5 py-2.5 rounded-full font-sans font-bold text-sm whitespace-nowrap transition-all border ${
               activeCategory === "Alto Proteína"
-                ? "bg-primary text-on-primary shadow-sm"
-                : "bg-[#ECFDF5] text-[#059669] hover:border-[#059669]"
+                ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md shadow-amber-500/20 border-transparent"
+                : "bg-amber-50 text-amber-800 border-amber-200 hover:border-amber-400"
             }`}
           >
-            {t.categoryHighProtein}
+            ⚡ {t.categoryHighProtein}
           </button>
           <button
             onClick={() => setActiveCategory("Premium")}
-            className={`px-5 py-2.5 rounded-full font-sans font-semibold text-sm whitespace-nowrap transition-all border border-transparent ${
+            className={`px-5 py-2.5 rounded-full font-sans font-bold text-sm whitespace-nowrap transition-all border ${
               activeCategory === "Premium"
-                ? "bg-primary text-on-primary shadow-sm"
-                : "bg-[#ECFDF5] text-[#059669] hover:border-[#059669]"
+                ? "bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-600/20 border-transparent"
+                : "bg-teal-50 text-teal-800 border-teal-200 hover:border-teal-400"
             }`}
           >
-            {t.categoryPremium}
+            ✨ {t.categoryPremium}
           </button>
         </div>
 
         {/* Menu Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
           {filteredItems.map((item) => (
             <article
               key={item.id}
               onClick={() => openProductModal(item)}
-              className="bg-surface-container-lowest rounded-xl p-6 shadow-[0px_4px_20px_rgba(0,0,0,0.03)] hover:-translate-y-1 transition-transform duration-300 flex flex-col border border-outline-variant/10 cursor-pointer group"
+              className="bg-surface-container-lowest rounded-2xl p-6 shadow-[0px_6px_24px_rgba(0,0,0,0.04)] hover:-translate-y-1.5 hover:shadow-[0px_12px_32px_rgba(5,150,105,0.08)] transition-all duration-300 flex flex-col border border-emerald-500/10 cursor-pointer group"
             >
               {/* Product Image */}
-              <div className="aspect-[4/5] rounded-lg overflow-hidden mb-6 bg-surface-container-high relative">
+              <div className="aspect-[4/5] rounded-xl overflow-hidden mb-6 bg-surface-container-high relative">
                 <img
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   src={item.image}
                   alt={language === "en" ? item.nameEn : item.name}
                 />
-                <span className="absolute top-4 left-4 bg-surface-container-lowest/90 backdrop-blur text-primary font-sans font-semibold text-xs px-3.5 py-1.5 rounded-full shadow-sm">
+                <span className="absolute top-3.5 left-3.5 bg-surface-container-lowest/95 backdrop-blur-md text-emerald-700 border border-emerald-500/15 font-sans font-bold text-xs px-3.5 py-1 rounded-full shadow-xs">
                   {language === "en" ? item.tagsEn[0] : item.tags[0] || "Keto"}
                 </span>
               </div>
               
               {/* Title & Description */}
-              <h3 className="font-display font-semibold text-xl text-on-surface mb-2 group-hover:text-primary transition-colors">
+              <h3 className="font-display font-bold text-xl text-on-surface mb-2 group-hover:text-primary transition-colors">
                 {language === "en" ? item.nameEn : item.name}
               </h3>
               <p className="font-sans text-sm text-on-surface-variant leading-relaxed flex-grow mb-6 line-clamp-2">
@@ -288,8 +270,8 @@ export default function Home() {
               </p>
               
               {/* Price and Add button */}
-              <div className="flex items-center justify-between mt-auto pt-2 border-t border-outline-variant/5">
-                <span className="font-display font-bold text-lg text-primary">
+              <div className="flex items-center justify-between mt-auto pt-3 border-t border-emerald-500/10">
+                <span className="font-display font-extrabold text-xl bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
                   {formatCOP(item.price)}
                 </span>
                 <button
@@ -298,11 +280,13 @@ export default function Home() {
                     e.stopPropagation();
                     addToCart(item.name);
                   }}
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all active:scale-95 shadow-sm text-on-primary ${
-                    successItem === item.name ? "bg-primary-container" : "bg-[#059669] hover:opacity-90"
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all active:scale-95 shadow-sm text-white ${
+                    successItem === item.name
+                      ? "bg-emerald-500 scale-105"
+                      : "bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 shadow-md shadow-emerald-600/20"
                   }`}
                 >
-                  <span className="material-symbols-outlined">
+                  <span className="material-symbols-outlined font-bold">
                     {successItem === item.name ? "check" : "add"}
                   </span>
                 </button>
@@ -312,12 +296,14 @@ export default function Home() {
         </div>
 
         {/* Brand Philosophy Banner */}
-        <section className="mt-20 p-8 sm:p-12 rounded-3xl bg-surface-container-low/70 border border-outline-variant/15 text-center relative overflow-hidden shadow-xs">
+        <section className="mt-20 p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-emerald-500/5 via-amber-500/5 to-teal-500/5 border border-emerald-500/15 text-center relative overflow-hidden shadow-xs">
           <div className="max-w-2xl mx-auto flex flex-col items-center gap-3">
-            <span className="material-symbols-outlined text-primary text-3xl opacity-75">
-              spa
-            </span>
-            <p className="font-serif italic text-2xl sm:text-3xl text-on-surface font-semibold tracking-wide">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 mb-1">
+              <span className="material-symbols-outlined text-2xl">
+                spa
+              </span>
+            </div>
+            <p className="font-serif italic text-2xl sm:text-3xl text-on-surface font-bold tracking-wide">
               &ldquo;{t.slogan}&rdquo;
             </p>
             <p className="font-sans text-xs sm:text-sm text-on-surface-variant max-w-lg leading-relaxed">

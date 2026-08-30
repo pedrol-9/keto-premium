@@ -2,28 +2,32 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #006948;
-  --color-secondary: #006c4e;
-  --color-tertiary: #555c6e;
-  --color-background: #f8f9fa;
-  --color-surface: #f8f9fa;
-  --color-surface-dim: #d9dadb;
-  --color-surface-bright: #f8f9fa;
+  --color-primary: #059669;
+  --color-primary-hover: #047857;
+  --color-secondary: #047857;
+  --color-tertiary: #d97706;
+  --color-accent-gold: #f59e0b;
+  --color-accent-coral: #f97316;
+  --color-accent-lime: #10b981;
+  --color-background: #fafbf9;
+  --color-surface: #fafbf9;
+  --color-surface-dim: #d4dad6;
+  --color-surface-bright: #ffffff;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f3f4f5;
-  --color-surface-container: #edeeef;
-  --color-surface-container-high: #e7e8e9;
-  --color-surface-container-highest: #e1e3e4;
-  --color-on-background: #191c1d;
-  --color-on-surface: #191c1d;
-  --color-on-surface-variant: #3d4a42;
-  --color-outline: #6d7a72;
-  --color-outline-variant: #bccac0;
+  --color-surface-container-low: #f2f5f2;
+  --color-surface-container: #eaf0eb;
+  --color-surface-container-high: #e2e9e4;
+  --color-surface-container-highest: #dbe4dd;
+  --color-on-background: #141c17;
+  --color-on-surface: #141c17;
+  --color-on-surface-variant: #354a3e;
+  --color-outline: #5c7466;
+  --color-outline-variant: #b2c6b9;
   
-  --color-secondary-container: #97f5cc;
-  --color-on-secondary-container: #007353;
-  --color-primary-container: #00855d;
-  --color-on-primary-container: #f5fff7;
+  --color-secondary-container: #d1fae5;
+  --color-on-secondary-container: #065f46;
+  --color-primary-container: #059669;
+  --color-on-primary-container: #ffffff;
   
   --color-error: #ba1a1a;
   --color-on-error: #ffffff;
