@@ -54,6 +54,9 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         />
+        {/* Splash screen / chrome color — blanco para que el fondo de la app no sea negro */}
+        <meta name="theme-color" content="#ffffff" />
+        <meta name="msapplication-TileColor" content="#ffffff" />
       </head>
       <body className="min-h-full flex flex-col bg-[#f8f9fa] text-[#191c1d]">
         {children}
