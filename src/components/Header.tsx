@@ -110,7 +110,7 @@ export default function Header() {
 
   return (
     <>
-    <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm border-b border-outline-variant/10">
+    <header className="fixed top-0 w-full z-50 bg-gradient-to-r from-emerald-100/90 via-teal-50/70 to-white/90 backdrop-blur-md shadow-sm border-b border-emerald-200/30">
       <div className="flex justify-between items-center px-4 sm:px-6 md:px-16 h-20 max-w-7xl mx-auto">
         {/* Logo / Headline */}
         <div className="flex items-center">

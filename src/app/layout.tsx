@@ -25,13 +25,17 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   title: "KetoBoutique - Come con propósito, disfruta sin límites",
   description: "Creaciones culinarias cetogénicas premium diseñadas para controlar tus macros con precisión orgánica.",
+  manifest: "/favicon/site.webmanifest",
   icons: {
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon/favicon.ico" },
+      { url: "/favicon/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon/favicon-96x96.png", sizes: "96x96", type: "image/png" },
     ],
-    shortcut: "/favicon.svg",
-    apple: "/favicon.svg",
+    apple: [
+      { url: "/favicon/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/favicon/favicon.ico",
   },
 };
 

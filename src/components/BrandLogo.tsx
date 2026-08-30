@@ -8,101 +8,60 @@ interface BrandLogoProps {
   size?: "sm" | "md" | "lg";
 }
 
-export function BrandIcon({ className = "w-10 h-10" }: { className?: string }) {
+export function BrandIcon({ className = "" }: { className?: string }) {
   return (
-    <div className={`relative flex items-center justify-center ${className} group-hover:scale-105 group-hover:rotate-1 transition-all duration-300`}>
-      {/* Ambient background glow on hover */}
-      <div className="absolute -inset-1.5 bg-gradient-to-tr from-emerald-500/30 via-amber-400/25 to-teal-400/30 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
-      <svg
-        viewBox="0 0 100 100"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-full relative z-10 drop-shadow-[0_2px_8px_rgba(5,150,105,0.2)]"
-      >
-        <defs>
-          <linearGradient id="kbEmeraldGrad" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#047857" />
-            <stop offset="50%" stopColor="#059669" />
-            <stop offset="100%" stopColor="#10B981" />
-          </linearGradient>
+    /* Contenedor circular — 74px ≈ 92% de los 80px del header */
+    <div
+      className={`
+        kb-icon-wrap
+        relative flex items-center justify-center
+        w-[74px] h-[74px] shrink-0
+        rounded-full overflow-visible
+        group-hover:scale-105 transition-all duration-300
+        ${className}
+      `}
+    >
+      <img
+        src="/logo_si_fondo.png"
+        alt="KetoBoutique"
+        className="
+          kb-logo-img
+          relative z-10
+          w-[92%] h-[92%]
+          object-contain
+          pointer-events-none
+          drop-shadow-[0_3px_10px_rgba(5,150,105,0.2)]
+        "
+      />
 
-          <linearGradient id="kbGoldGrad" x1="20" y1="20" x2="90" y2="90" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#F59E0B" />
-            <stop offset="60%" stopColor="#FBBF24" />
-            <stop offset="100%" stopColor="#EA580C" />
-          </linearGradient>
-
-          <linearGradient id="kbLeafGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#6EE7B7" />
-            <stop offset="100%" stopColor="#059669" />
-          </linearGradient>
-
-          <filter id="kbDropShadow" x="-10%" y="-10%" width="130%" height="130%">
-            <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" floodColor="#064e3b" floodOpacity="0.22" />
-          </filter>
-        </defs>
-
-        {/* Soft Organic Shield Halo */}
-        <path
-          d="M50 10C32 10 18 26 18 51C18 75 32 90 50 90C68 90 82 75 82 51C82 26 68 10 50 10Z"
-          fill="url(#kbEmeraldGrad)"
-          fillOpacity="0.08"
-        />
-
-        {/* Calligraphic Emerald "K" */}
-        {/* Main Stem with smooth top & bottom teardrop terminal */}
-        <path
-          d="M36 24C36 21 33 19 30 20C26 21.5 25 26 25 32C25 46 25 60 25 72C25 78 28 81 33 80C36 79.5 37 76 37 72C37 60 37 46 37 32C37 28 36.5 25 36 24Z"
-          fill="url(#kbEmeraldGrad)"
-          filter="url(#kbDropShadow)"
-        />
-
-        {/* K Upper Diagonal arm */}
-        <path
-          d="M33 48C38 43 45 35 52 26C55 22 53 19 49 19C45 19 40 23 34 30L33 48Z"
-          fill="url(#kbEmeraldGrad)"
-        />
-
-        {/* Organic Leaf Accent flourishing from top of K */}
-        <path
-          d="M52 23C56 18 63 17 65 19C67 21 65 28 60 31C55 34 50 28 52 23Z"
-          fill="url(#kbLeafGrad)"
-          className="transition-transform duration-300 group-hover:scale-110 origin-center"
-        />
-
-        {/* Interlocking Golden Amber "B" */}
-        {/* Top Loop */}
-        <path
-          d="M42 30C42 25 47 22 54 22C63 22 69 27 69 34C69 41 62 46 53 46C49 46 45 45 42 43V30Z"
-          fill="url(#kbGoldGrad)"
-          filter="url(#kbDropShadow)"
-        />
-
-        {/* Bottom Loop (Generous gourmet curve) */}
-        <path
-          d="M42 44C47 45 53 45 58 45C68 45 76 51 76 60C76 71 67 78 54 78C45 78 40 73 38 67C37 64 39 62 42 62C45 62 46 64 48 67C50 70 53 71 56 71C62 71 67 67 67 60C67 53 61 51 53 51C48 51 44 51.5 42 52V44Z"
-          fill="url(#kbGoldGrad)"
-          filter="url(#kbDropShadow)"
-        />
-
-        {/* Golden Diamond / Sparkle Spark Accent */}
-        <circle cx="53" cy="48.5" r="3.5" fill="#FBBF24" />
-        <path d="M53 43L54.5 47.5L59 48.5L54.5 49.5L53 54L51.5 49.5L47 48.5L51.5 47.5L53 43Z" fill="#FFFBEB" />
-      </svg>
+      {/* Keyframe inline para el float — se inyecta en el mismo componente */}
+      <style>{`
+        @keyframes kb-float {
+          0%   { transform: translateY(0px) rotate(0deg); }
+          25%  { transform: translateY(-4px) rotate(0.6deg); }
+          55%  { transform: translateY(1.5px) rotate(-0.4deg); }
+          80%  { transform: translateY(-2px) rotate(0.2deg); }
+          100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .kb-icon-wrap:hover .kb-logo-img,
+        .kb-icon-wrap:active .kb-logo-img {
+          animation: kb-float 1.4s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 }
 
-export default function BrandLogo({ showSlogan = false, className = "", size = "md" }: BrandLogoProps) {
-  const iconSize = size === "sm" ? "w-8 h-8" : size === "lg" ? "w-12 h-12 sm:w-14 sm:h-14" : "w-10 h-10 sm:w-11 sm:h-11";
-  const titleSize = size === "sm" ? "text-lg" : size === "lg" ? "text-2xl sm:text-3xl md:text-4xl" : "text-xl sm:text-2xl md:text-[26px]";
-
+export default function BrandLogo({ showSlogan = false, className = "" }: BrandLogoProps) {
   return (
-    <Link href="/" className={`inline-flex items-center gap-2.5 sm:gap-3 select-none group ${className}`}>
-      <BrandIcon className={iconSize} />
+    <Link
+      href="/"
+      className={`inline-flex items-center gap-3 select-none group ${className}`}
+    >
+      <BrandIcon />
+
       <div className="flex flex-col justify-center">
-        <div className={`font-display font-extrabold tracking-tight leading-none ${titleSize}`}>
+        <div className="font-display font-extrabold tracking-tight leading-none text-xl sm:text-2xl md:text-[26px]">
           <span className="bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 bg-clip-text text-transparent group-hover:from-emerald-500 group-hover:to-teal-400 transition-all">
             Keto
           </span>
