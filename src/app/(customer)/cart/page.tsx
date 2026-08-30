@@ -245,12 +245,12 @@ export default function CartPage() {
 
     const itemLines = cartItems.map((item) => `   • ${item.count}x ${item.title}`).join("\n");
     const message = [
-      `🥑 *Nuevo Pedido — KetoBoutique*`,
+      `🌿 *Nuevo Pedido — KetoBoutique*`,
       ``,
       `👤 *Cliente:* ${clientName.trim()}`,
       `📍 *Dirección:* ${address.trim()}`,
       ``,
-      `🛒 *Productos:*`,
+      `📋 *Productos:*`,
       itemLines,
       ``,
       `💰 *Total a pagar:* *${formattedTotal}*`,
