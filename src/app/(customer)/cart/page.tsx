@@ -243,7 +243,24 @@ export default function CartPage() {
       console.error("Error creating order in Supabase/Local:", e);
     }
 
-    const message = `Hola, mi pedido es [${detailsStr}]. Total: [${formattedTotal}]. Nombre: [${clientName.trim()}]. Dirección: [${address.trim()}]. Deseo pagar a través de Nequi. Quedo atento al código/número para transferir.`;
+    const itemLines = cartItems.map((item) => `   • ${item.count}x ${item.title}`).join("\n");
+    const message = [
+      `🥑 *Nuevo Pedido — KetoBoutique*`,
+      ``,
+      `👤 *Cliente:* ${clientName.trim()}`,
+      `📍 *Dirección:* ${address.trim()}`,
+      ``,
+      `🛒 *Productos:*`,
+      itemLines,
+      ``,
+      `💰 *Total a pagar:* *${formattedTotal}*`,
+      ``,
+      `💳 *Método de pago:* Nequi`,
+      ``,
+      `_Por favor comparte el número o código Nequi para realizar la transferencia. ¡Gracias! 🙏_`,
+      ``,
+      `🔖 Ref: ${orderId}`,
+    ].join("\n");
     const encodedMessage = encodeURIComponent(message);
     const phoneNumber = WHATSAPP_NUMBER;
 
