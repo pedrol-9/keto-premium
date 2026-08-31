@@ -1,209 +1,232 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ADMIN_PIN } from "@/products";
 
-// ── WebAuthn helpers ──────────────────────────────────────────────────────────
-const BIOMETRIC_CRED_KEY = "kb_biometric_cred";
-
-function isBiometricSupported(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    typeof window.PublicKeyCredential !== "undefined"
-  );
-}
-
-function getStoredCredId(): Uint8Array<ArrayBuffer> | null {
-  try {
-    const stored = localStorage.getItem(BIOMETRIC_CRED_KEY);
-    if (!stored) return null;
-    const raw = Uint8Array.from(atob(stored), (c) => c.charCodeAt(0));
-    // Re-wrap in a concrete ArrayBuffer so TypeScript's WebAuthn types are satisfied
-    const buf = new ArrayBuffer(raw.length);
-    new Uint8Array(buf).set(raw);
-    return new Uint8Array(buf);
-  } catch {
-    return null;
-  }
-}
-
-async function registerBiometric(): Promise<boolean> {
-  try {
-    const credential = (await navigator.credentials.create({
-      publicKey: {
-        challenge: crypto.getRandomValues(new Uint8Array(new ArrayBuffer(32))),
-        rp: { name: "KetoBoutique Admin", id: window.location.hostname },
-        user: {
-          id: crypto.getRandomValues(new Uint8Array(new ArrayBuffer(16))),
-          name: "admin@ketoboutique",
-          displayName: "Admin",
-        },
-        pubKeyCredParams: [
-          { alg: -7, type: "public-key" },   // ES256
-          { alg: -257, type: "public-key" },  // RS256
-        ],
-        authenticatorSelection: {
-          authenticatorAttachment: "platform",
-          userVerification: "required",
-          residentKey: "preferred",
-        },
-        timeout: 60000,
-      },
-    })) as PublicKeyCredential;
-
-    const encoded = btoa(
-      String.fromCharCode(...new Uint8Array(credential.rawId))
-    );
-    localStorage.setItem(BIOMETRIC_CRED_KEY, encoded);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function authenticateWithBiometric(): Promise<boolean> {
-  try {
-    const credId = getStoredCredId();
-    if (!credId) return false;
-
-    await navigator.credentials.get({
-      publicKey: {
-        challenge: crypto.getRandomValues(new Uint8Array(new ArrayBuffer(32))),
-        allowCredentials: [
-          { id: credId, type: "public-key", transports: ["internal"] },
-        ],
-        userVerification: "required",
-        timeout: 60000,
-      },
-    });
-    return true;
-  } catch {
-    return false;
-  }
-}
-// ─────────────────────────────────────────────────────────────────────────────
+const MAX_LENGTH = 4;
 
 export default function AdminLoginPage() {
-  const [pin, setPin] = useState("");
-  const [isError, setIsError] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [biometricAvailable, setBiometricAvailable] = useState(false);
-  const [biometricRegistered, setBiometricRegistered] = useState(false);
-  const [showBiometricPrompt, setShowBiometricPrompt] = useState(false);
-  const [biometricLoading, setBiometricLoading] = useState(false);
   const router = useRouter();
+  const [pin, setPin] = useState<string>("");
+  const [isError, setIsError] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [biometricAvailable, setBiometricAvailable] = useState<boolean>(false);
+  const [biometricRegistered, setBiometricRegistered] = useState<boolean>(false);
+  const [biometricLoading, setBiometricLoading] = useState<boolean>(false);
+  const [showBiometricPrompt, setShowBiometricPrompt] = useState<boolean>(false);
 
-  const CORRECT_PIN = ADMIN_PIN;
-  const MAX_LENGTH = 4;
-
-  // Check WebAuthn availability on mount
+  // Check if WebAuthn is supported & if a credential already exists
   useEffect(() => {
-    if (isBiometricSupported()) {
-      setBiometricAvailable(true);
-      setBiometricRegistered(!!getStoredCredId());
+    if (
+      typeof window !== "undefined" &&
+      window.PublicKeyCredential &&
+      typeof window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable ===
+        "function"
+    ) {
+      window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+        .then((available) => {
+          setBiometricAvailable(available);
+          const hasCred = !!localStorage.getItem("kb_biometric_credential_id");
+          setBiometricRegistered(hasCred);
+        })
+        .catch(() => {
+          setBiometricAvailable(false);
+        });
     }
   }, []);
 
-  const grantAccess = useCallback(() => {
+  const handleSuccessfulAuth = useCallback(() => {
+    setIsSuccess(true);
     localStorage.setItem("kb_admin_authenticated", "true");
-    setTimeout(() => {
-      router.push("/admin/dashboard");
-    }, 800);
-  }, [router]);
 
+    const hasCred = !!localStorage.getItem("kb_biometric_credential_id");
+    if (biometricAvailable && !hasCred) {
+      setShowBiometricPrompt(true);
+    } else {
+      setTimeout(() => {
+        router.push("/admin/dashboard");
+      }, 400);
+    }
+  }, [biometricAvailable, router]);
+
+  // Handle PIN input
   const handleInput = useCallback(
-    (val: string) => {
-      if (isError || isSuccess) return;
-
-      if (pin.length < MAX_LENGTH) {
-        const nextPin = pin + val;
+    (digit: string) => {
+      if (pin.length < MAX_LENGTH && !isSuccess) {
+        const nextPin = pin + digit;
         setPin(nextPin);
+        setIsError(false);
 
         if (nextPin.length === MAX_LENGTH) {
-          if (nextPin === CORRECT_PIN) {
-            setIsSuccess(true);
-            // Offer biometric registration if not yet registered
-            if (biometricAvailable && !biometricRegistered) {
-              setShowBiometricPrompt(true);
-            } else {
-              grantAccess();
-            }
+          if (nextPin === ADMIN_PIN) {
+            handleSuccessfulAuth();
           } else {
             setIsError(true);
             setTimeout(() => {
               setPin("");
               setIsError(false);
-            }, 1500);
+            }, 600);
           }
         }
       }
     },
-    [pin, isError, isSuccess, CORRECT_PIN, biometricAvailable, biometricRegistered, grantAccess]
+    [pin, isSuccess, handleSuccessfulAuth]
   );
 
   const handleDelete = useCallback(() => {
-    if (isError || isSuccess) return;
-    if (pin.length > 0) {
+    if (pin.length > 0 && !isSuccess) {
       setPin(pin.slice(0, -1));
+      setIsError(false);
     }
-  }, [pin, isError, isSuccess]);
+  }, [pin, isSuccess]);
 
-  const handleBiometricLogin = async () => {
-    setBiometricLoading(true);
-    const ok = await authenticateWithBiometric();
-    setBiometricLoading(false);
-    if (ok) {
-      setIsSuccess(true);
-      grantAccess();
-    } else {
-      setIsError(true);
-      setTimeout(() => setIsError(false), 1500);
-    }
-  };
-
+  // Biometric registration (WebAuthn create credential)
   const handleRegisterBiometric = async () => {
-    const ok = await registerBiometric();
-    setShowBiometricPrompt(false);
-    if (ok) setBiometricRegistered(true);
-    grantAccess();
+    try {
+      setBiometricLoading(true);
+      const rawChallenge = crypto.getRandomValues(new Uint8Array(32));
+      const challengeBuffer = new ArrayBuffer(rawChallenge.byteLength);
+      new Uint8Array(challengeBuffer).set(rawChallenge);
+
+      const rawUserId = crypto.getRandomValues(new Uint8Array(16));
+      const userIdBuffer = new ArrayBuffer(rawUserId.byteLength);
+      new Uint8Array(userIdBuffer).set(rawUserId);
+
+      const publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions = {
+        challenge: challengeBuffer,
+        rp: {
+          name: "KetoBoutique Admin",
+          id: window.location.hostname,
+        },
+        user: {
+          id: userIdBuffer,
+          name: "admin@ketoboutique.com",
+          displayName: "KetoBoutique Admin",
+        },
+        pubKeyCredParams: [
+          { alg: -7, type: "public-key" }, // ES256
+          { alg: -257, type: "public-key" }, // RS256
+        ],
+        authenticatorSelection: {
+          authenticatorAttachment: "platform",
+          userVerification: "required",
+        },
+        timeout: 60000,
+      };
+
+      const credential = (await navigator.credentials.create({
+        publicKey: publicKeyCredentialCreationOptions,
+      })) as PublicKeyCredential | null;
+
+      if (credential) {
+        const credId = btoa(
+          String.fromCharCode(...new Uint8Array(credential.rawId))
+        );
+        localStorage.setItem("kb_biometric_credential_id", credId);
+        setBiometricRegistered(true);
+      }
+    } catch (e) {
+      console.warn("Biometric registration cancelled or failed:", e);
+    } finally {
+      setBiometricLoading(false);
+      setShowBiometricPrompt(false);
+      router.push("/admin/dashboard");
+    }
   };
 
   const handleSkipBiometric = () => {
     setShowBiometricPrompt(false);
-    grantAccess();
+    router.push("/admin/dashboard");
+  };
+
+  // Biometric login (WebAuthn get assertion)
+  const handleBiometricLogin = async () => {
+    try {
+      setBiometricLoading(true);
+      setIsError(false);
+
+      const savedCredId = localStorage.getItem("kb_biometric_credential_id");
+      if (!savedCredId) {
+        setIsError(true);
+        setBiometricLoading(false);
+        return;
+      }
+
+      const rawChallenge = crypto.getRandomValues(new Uint8Array(32));
+      const challengeBuffer = new ArrayBuffer(rawChallenge.byteLength);
+      new Uint8Array(challengeBuffer).set(rawChallenge);
+
+      const rawCredBytes = Uint8Array.from(atob(savedCredId), (c) =>
+        c.charCodeAt(0)
+      );
+      const credIdBuffer = new ArrayBuffer(rawCredBytes.byteLength);
+      new Uint8Array(credIdBuffer).set(rawCredBytes);
+
+      const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions = {
+        challenge: challengeBuffer,
+        allowCredentials: [
+          {
+            id: credIdBuffer,
+            type: "public-key",
+            transports: ["internal"],
+          },
+        ],
+        userVerification: "required",
+        timeout: 60000,
+      };
+
+      const assertion = await navigator.credentials.get({
+        publicKey: publicKeyCredentialRequestOptions,
+      });
+
+      if (assertion) {
+        setIsSuccess(true);
+        localStorage.setItem("kb_admin_authenticated", "true");
+        setTimeout(() => {
+          router.push("/admin/dashboard");
+        }, 300);
+      }
+    } catch (e) {
+      console.warn("Biometric authentication cancelled or failed:", e);
+      setIsError(true);
+      setTimeout(() => setIsError(false), 800);
+    } finally {
+      setBiometricLoading(false);
+    }
   };
 
   // Physical keyboard support
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (showBiometricPrompt) return;
       if (e.key >= "0" && e.key <= "9") {
         handleInput(e.key);
       } else if (e.key === "Backspace") {
         handleDelete();
       }
     };
+
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleInput, handleDelete]);
+  }, [handleInput, handleDelete, showBiometricPrompt]);
 
   return (
-    <div className="bg-background min-h-screen flex flex-col items-center justify-center font-sans text-on-surface antialiased overflow-hidden selection:bg-primary-container selection:text-on-primary-container relative">
+    <div className="bg-background min-h-screen flex flex-col items-center justify-center font-sans text-on-surface antialiased overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container relative py-4 sm:py-6 px-4">
       {/* Decorative ambient background */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-30">
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-25">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-surface-container-high blur-3xl mix-blend-multiply"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-surface-container-low blur-3xl mix-blend-multiply"></div>
       </div>
 
       {/* ── Biometric registration prompt overlay ── */}
       {showBiometricPrompt && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-surface-container-lowest w-full max-w-sm rounded-[28px] p-8 shadow-[0px_20px_60px_rgba(0,0,0,0.18)] border border-outline-variant/10 flex flex-col items-center gap-5 animate-in slide-in-from-bottom-4 duration-300">
-            {/* Icon */}
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-surface-container-lowest w-full max-w-sm rounded-[24px] p-6 sm:p-7 shadow-[0px_20px_60px_rgba(0,0,0,0.2)] border border-outline-variant/10 flex flex-col items-center gap-4 animate-scaleUp">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
               <span
-                className="material-symbols-outlined text-[44px] text-primary"
+                className="material-symbols-outlined text-[36px] text-primary"
                 style={{ fontVariationSettings: "'FILL' 1" }}
               >
                 fingerprint
@@ -211,19 +234,19 @@ export default function AdminLoginPage() {
             </div>
 
             <div className="text-center">
-              <h2 className="font-display font-bold text-xl text-on-surface">
+              <h2 className="font-display font-bold text-lg text-on-surface">
                 Acceso biométrico
               </h2>
-              <p className="font-sans text-sm text-on-surface-variant mt-2 leading-relaxed max-w-[260px]">
-                Activa la huella digital o Face ID para entrar al panel sin necesidad del PIN la próxima vez.
+              <p className="font-sans text-xs text-on-surface-variant mt-1 leading-relaxed max-w-[260px]">
+                Activa la huella digital o Face ID para entrar al panel con un toque.
               </p>
             </div>
 
             <button
               onClick={handleRegisterBiometric}
-              className="w-full bg-primary text-on-primary font-sans font-semibold text-sm py-4 rounded-2xl transition-all active:scale-95 hover:opacity-90 flex items-center justify-center gap-2 shadow-md shadow-primary/20"
+              className="w-full bg-primary text-on-primary font-sans font-semibold text-xs py-3.5 rounded-xl transition-all active:scale-95 hover:opacity-90 flex items-center justify-center gap-2 shadow-md shadow-primary/20"
             >
-              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+              <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                 fingerprint
               </span>
               Activar huella / Face ID
@@ -231,7 +254,7 @@ export default function AdminLoginPage() {
 
             <button
               onClick={handleSkipBiometric}
-              className="font-sans text-sm text-on-surface-variant hover:text-on-surface transition-colors"
+              className="font-sans text-xs text-on-surface-variant hover:text-on-surface transition-colors py-1"
             >
               Ahora no
             </button>
@@ -239,84 +262,80 @@ export default function AdminLoginPage() {
         </div>
       )}
 
-      {/* ── Main Container ── */}
-      <main className="relative z-10 w-full max-w-[400px] px-6 md:px-0 flex flex-col items-center">
+      {/* ── Main Compact Container ── */}
+      <main className="relative z-10 w-full max-w-[360px] flex flex-col items-center">
         {/* Header / Logo */}
-        <header className="text-center mb-8 flex flex-col items-center">
+        <header className="text-center mb-4 flex flex-col items-center">
           <Link
             href="/"
-            className="w-16 h-16 rounded-2xl bg-surface-container-lowest shadow-[0px_4px_20px_rgba(0,0,0,0.03)] flex items-center justify-center mb-4 border border-outline-variant/10 hover:opacity-90 active:scale-95 transition-all"
+            className="w-12 h-12 rounded-2xl bg-surface-container-lowest shadow-[0px_4px_20px_rgba(0,0,0,0.03)] flex items-center justify-center mb-2 border border-outline-variant/10 hover:opacity-90 active:scale-95 transition-all"
           >
             <span
-              className="material-symbols-outlined text-[32px] text-primary"
+              className="material-symbols-outlined text-[26px] text-primary"
               style={{ fontVariationSettings: "'FILL' 1" }}
             >
               shield_lock
             </span>
           </Link>
-          <h1 className="font-display font-bold text-2xl md:text-3xl text-primary tracking-tight">
+          <h1 className="font-display font-bold text-xl sm:text-2xl text-primary tracking-tight">
             KetoBoutique
           </h1>
-          <p className="font-sans text-sm text-on-surface-variant mt-2 text-center max-w-[280px]">
+          <p className="font-sans text-xs text-on-surface-variant mt-0.5 text-center">
             Área administrativa protegida
           </p>
         </header>
 
         {/* Login Card */}
-        <section className="bg-surface-container-lowest w-full rounded-[24px] p-6 sm:p-8 shadow-[0px_10px_40px_rgba(0,0,0,0.06)] flex flex-col items-center relative overflow-hidden border border-outline-variant/10">
-
+        <section className="bg-surface-container-lowest w-full rounded-[22px] p-5 sm:p-6 shadow-[0px_10px_40px_rgba(0,0,0,0.05)] flex flex-col items-center relative overflow-hidden border border-outline-variant/10">
           {/* Error Message Overlay */}
           <div
-            className={`absolute top-0 left-0 w-full bg-error-container text-on-error-container font-sans font-semibold text-sm py-3 text-center transition-all duration-300 z-20 flex items-center justify-center gap-2 ${
+            className={`absolute top-0 left-0 w-full bg-error-container text-on-error-container font-sans font-semibold text-xs py-2 text-center transition-all duration-300 z-20 flex items-center justify-center gap-1.5 ${
               isError ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full"
             }`}
           >
-            <span className="material-symbols-outlined text-[16px]">error</span>
+            <span className="material-symbols-outlined text-[14px]">error</span>
             {biometricLoading ? "Error biométrico" : "PIN Incorrecto"}
           </div>
 
-          {/* ── Biometric login button (shown when credential is stored) ── */}
+          {/* ── Compact Biometric login button ── */}
           {biometricRegistered && !isSuccess && (
-            <>
+            <div className="w-full mb-3">
               <button
                 onClick={handleBiometricLogin}
                 disabled={biometricLoading}
-                className="w-full mb-5 flex flex-col items-center justify-center gap-2 py-6 rounded-2xl border-2 border-primary/20 bg-primary/5 hover:bg-primary/10 active:scale-[0.98] transition-all disabled:opacity-60 group"
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-primary/25 bg-primary/5 hover:bg-primary/10 active:scale-[0.98] transition-all disabled:opacity-60 group shadow-xs"
               >
                 <span
-                  className={`material-symbols-outlined text-[48px] text-primary transition-transform ${
+                  className={`material-symbols-outlined text-[22px] text-primary transition-transform ${
                     biometricLoading ? "animate-pulse scale-110" : "group-hover:scale-110"
                   }`}
                   style={{ fontVariationSettings: "'FILL' 1" }}
                 >
                   fingerprint
                 </span>
-                <span className="font-sans font-semibold text-sm text-primary">
-                  {biometricLoading ? "Verificando…" : "Entrar con huella / Face ID"}
+                <span className="font-sans font-semibold text-xs text-primary">
+                  {biometricLoading ? "Verificando…" : "Entrar con Huella / Face ID"}
                 </span>
               </button>
 
-              {/* Divider */}
-              <div className="flex items-center gap-3 w-full mb-5">
-                <div className="flex-1 h-px bg-outline-variant/20" />
-                <span className="font-sans text-xs text-on-surface-variant/50">
-                  o usa tu PIN
-                </span>
-                <div className="flex-1 h-px bg-outline-variant/20" />
+              {/* Minimal Divider */}
+              <div className="flex items-center gap-2 w-full mt-3">
+                <div className="flex-1 h-px bg-outline-variant/15" />
+                <span className="font-sans text-[11px] text-on-surface-variant/50">o PIN</span>
+                <div className="flex-1 h-px bg-outline-variant/15" />
               </div>
-            </>
+            </div>
           )}
 
           {/* PIN Display Dots */}
           <div
-            className={`flex gap-4 sm:gap-5 mb-8 sm:mb-10 mt-2 h-4 items-center justify-center w-full transition-all ${
+            className={`flex gap-3.5 mb-5 mt-1 h-3.5 items-center justify-center w-full transition-all ${
               isError ? "animate-shake" : ""
             }`}
           >
             {[...Array(MAX_LENGTH)].map((_, index) => {
               const isFilled = index < pin.length;
-              let dotClass =
-                "w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full transition-all duration-200 ";
+              let dotClass = "w-3 h-3 rounded-full transition-all duration-200 ";
 
               if (isSuccess) {
                 dotClass += "bg-primary-container scale-110";
@@ -332,42 +351,35 @@ export default function AdminLoginPage() {
             })}
           </div>
 
-          {/* Numpad Grid */}
-          <div className="grid grid-cols-3 gap-x-4 sm:gap-x-6 gap-y-4 w-full px-2 sm:px-4 mb-2">
+          {/* Numpad Grid (Compact & Ergonomic) */}
+          <div className="grid grid-cols-3 gap-x-3 sm:gap-x-4 gap-y-2.5 sm:gap-y-3 w-full px-1">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
               <button
                 key={num}
                 onClick={() => handleInput(num.toString())}
-                className="w-16 h-16 rounded-full mx-auto flex items-center justify-center font-display font-semibold text-xl text-on-surface bg-surface-container-lowest border border-outline-variant/20 hover:bg-surface-container-low active:scale-95 focus:outline-none transition-all duration-100 shadow-sm"
+                className="w-14 h-14 sm:w-15 sm:h-15 rounded-full mx-auto flex items-center justify-center font-display font-semibold text-lg text-on-surface bg-surface-container-lowest border border-outline-variant/15 hover:bg-surface-container-low active:scale-95 focus:outline-none transition-all duration-100 shadow-xs"
               >
                 {num}
               </button>
             ))}
 
             {/* Row 4 */}
-            <div className="w-16 h-16 mx-auto" />
+            <div className="w-14 h-14 sm:w-15 sm:h-15 mx-auto" />
             <button
               onClick={() => handleInput("0")}
-              className="w-16 h-16 rounded-full mx-auto flex items-center justify-center font-display font-semibold text-xl text-on-surface bg-surface-container-lowest border border-outline-variant/20 hover:bg-surface-container-low active:scale-95 focus:outline-none transition-all duration-100 shadow-sm"
+              className="w-14 h-14 sm:w-15 sm:h-15 rounded-full mx-auto flex items-center justify-center font-display font-semibold text-lg text-on-surface bg-surface-container-lowest border border-outline-variant/15 hover:bg-surface-container-low active:scale-95 focus:outline-none transition-all duration-100 shadow-xs"
             >
               0
             </button>
             <button
               aria-label="Delete"
               onClick={handleDelete}
-              className="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low active:scale-95 focus:outline-none transition-all duration-100"
+              className="w-14 h-14 sm:w-15 sm:h-15 rounded-full mx-auto flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low active:scale-95 focus:outline-none transition-all duration-100"
             >
-              <span className="material-symbols-outlined text-[24px]">backspace</span>
+              <span className="material-symbols-outlined text-[20px]">backspace</span>
             </button>
           </div>
         </section>
-
-        {/* Footer */}
-        <div className="mt-6 text-center">
-          <button className="font-sans font-semibold text-sm text-tertiary hover:text-on-surface transition-colors bg-transparent border-none">
-            ¿Necesita ayuda?
-          </button>
-        </div>
       </main>
     </div>
   );

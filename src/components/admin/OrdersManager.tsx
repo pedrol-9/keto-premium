@@ -79,11 +79,11 @@ export default function OrdersManager({
             </p>
           </div>
 
-          {/* Tabs Buttons */}
-          <div className="flex items-center gap-1.5 bg-surface-container-low p-1 rounded-xl border border-outline-variant/15 self-start sm:self-auto shrink-0">
+          {/* Tabs Buttons (Symmetrical Full-Width Container) */}
+          <div className="flex items-center gap-1.5 bg-surface-container-low p-1 rounded-xl border border-outline-variant/15 w-full sm:w-auto shrink-0">
             <button
               onClick={() => setOrdersTab("pending")}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-sans font-semibold transition-all ${
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 sm:py-1.5 rounded-lg text-xs font-sans font-semibold transition-all ${
                 ordersTab === "pending"
                   ? "bg-surface-container-lowest text-primary shadow-sm"
                   : "text-on-surface-variant hover:text-on-surface"
@@ -91,7 +91,7 @@ export default function OrdersManager({
             >
               <span>Pendientes</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                className={`text-[10px] px-2 py-0.2 rounded-full font-bold ${
                   ordersTab === "pending"
                     ? "bg-primary text-white"
                     : "bg-surface-container-highest text-on-surface-variant"
@@ -103,7 +103,7 @@ export default function OrdersManager({
 
             <button
               onClick={() => setOrdersTab("confirmed")}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-sans font-semibold transition-all ${
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 sm:py-1.5 rounded-lg text-xs font-sans font-semibold transition-all ${
                 ordersTab === "confirmed"
                   ? "bg-surface-container-lowest text-emerald-800 shadow-sm"
                   : "text-on-surface-variant hover:text-on-surface"
@@ -111,7 +111,7 @@ export default function OrdersManager({
             >
               <span>Confirmadas</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                className={`text-[10px] px-2 py-0.2 rounded-full font-bold ${
                   ordersTab === "confirmed"
                     ? "bg-emerald-700 text-white"
                     : "bg-surface-container-highest text-on-surface-variant"
