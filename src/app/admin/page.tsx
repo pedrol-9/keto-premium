@@ -141,13 +141,11 @@ export default function AdminLoginPage() {
   const handleBiometricAction = async () => {
     const savedCredId = typeof window !== "undefined" ? localStorage.getItem("kb_biometric_credential_id") : null;
 
-    // If not registered yet, prompt directly to register
     if (!savedCredId) {
       setShowBiometricPrompt(true);
       return;
     }
 
-    // Otherwise authenticate via stored assertion
     try {
       setBiometricLoading(true);
       setIsError(false);
@@ -211,11 +209,11 @@ export default function AdminLoginPage() {
   }, [handleInput, handleDelete, showBiometricPrompt]);
 
   return (
-    <div className="fixed inset-0 w-full h-full bg-background overflow-hidden flex flex-col items-center justify-center font-sans text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container p-4 overscroll-none touch-none">
-      {/* ── Top-Left Back Button ── */}
+    <div className="min-h-[100dvh] w-full bg-background flex flex-col items-center justify-center font-sans text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container p-4 relative">
+      {/* ── Top-Left Back Button (Floating Pill) ── */}
       <Link
         href="/"
-        className="absolute top-4 left-4 z-20 flex items-center gap-1 px-2.5 xs:px-3 py-1.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-md border border-outline-variant/15 text-on-surface-variant hover:text-primary font-sans text-xs font-semibold shadow-xs transition-all active:scale-95"
+        className="absolute top-4 left-4 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-md border border-outline-variant/15 text-on-surface-variant hover:text-primary font-sans text-xs font-semibold shadow-xs transition-all active:scale-95"
         title="Volver a la tienda"
       >
         <span className="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -270,8 +268,8 @@ export default function AdminLoginPage() {
         </div>
       )}
 
-      {/* ── Main Zero-Scroll Compact Container ── */}
-      <main className="relative z-10 w-full max-w-[350px] flex flex-col items-center">
+      {/* ── Main Compact Container ── */}
+      <main className="relative z-10 w-full max-w-[350px] flex flex-col items-center my-auto">
         {/* Header / Logo */}
         <header className="text-center mb-3 flex flex-col items-center">
           <Link
@@ -294,7 +292,7 @@ export default function AdminLoginPage() {
           </p>
         </header>
 
-        {/* Login Card */}
+        {/* Login Card (Clean: only Biometric Bar, PIN display and Numpad) */}
         <section className="bg-surface-container-lowest w-full rounded-[22px] p-4 sm:p-5 shadow-[0px_10px_40px_rgba(0,0,0,0.05)] flex flex-col items-center relative overflow-hidden border border-outline-variant/10">
           {/* Error Message Overlay */}
           <div
@@ -306,18 +304,7 @@ export default function AdminLoginPage() {
             {biometricLoading ? "Error biométrico" : "PIN Incorrecto"}
           </div>
 
-          {/* Bottom Back Link */}
-        <div className="mt-2.5 text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1 font-sans font-semibold text-[11px] text-on-surface-variant hover:text-primary transition-colors py-1 px-3 rounded-full hover:bg-surface-container-low"
-          >
-            <span className="material-symbols-outlined text-[15px]">arrow_back</span>
-            <span>Volver al menú</span>
-          </Link>
-        </div>
-
-          {/* ── Symmetrical Biometric Bar (Always Visible & Accessible) ── */}
+          {/* ── Symmetrical Biometric Bar ── */}
           {!isSuccess && (
             <div className="w-full mb-3">
               <button
@@ -373,7 +360,7 @@ export default function AdminLoginPage() {
             })}
           </div>
 
-          {/* Numpad Grid (Compact & Ergonomic for Samsung A16 PWA) */}
+          {/* Numpad Grid */}
           <div className="grid grid-cols-3 gap-x-3 gap-y-2 w-full px-1">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
               <button
@@ -402,6 +389,17 @@ export default function AdminLoginPage() {
             </button>
           </div>
         </section>
+
+        {/* Bottom Back Link (Clean & perfectly outside the card) */}
+        <div className="mt-3 text-center">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 font-sans font-semibold text-xs text-on-surface-variant hover:text-primary transition-colors py-1.5 px-3.5 rounded-full hover:bg-surface-container-low"
+          >
+            <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+            <span>Volver a la tienda</span>
+          </Link>
+        </div>
       </main>
     </div>
   );
