@@ -205,37 +205,42 @@ export default function OrdersManager({
               {filteredPending.map((order) => (
                 <div
                   key={order.id}
-                  className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3.5 sm:p-4 bg-surface-container-low border-l-4 border-l-primary border border-outline-variant/10 rounded-xl gap-3 hover:border-primary/40 transition-all duration-200 group shadow-xs"
+                  className="flex flex-col justify-between p-3.5 sm:p-4 bg-surface-container-low border-l-4 border-l-primary border border-outline-variant/10 rounded-xl gap-3 hover:border-primary/40 transition-all duration-200 group shadow-xs"
                 >
-                  <div className="flex flex-col min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-sans font-bold text-sm text-on-surface">{order.customerName}</span>
-                      {/* Clickable Tail */}
-                      <button
-                        onClick={() => onSelectOrderDetail(order)}
-                        title="Ver información completa del pedido"
-                        className="text-[10px] font-sans font-bold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300/60 px-2.5 py-0.5 rounded-full transition-all active:scale-95 flex items-center gap-1 shadow-xs"
-                      >
-                        <span>{order.id}</span>
-                        <span className="material-symbols-outlined text-[11px]">visibility</span>
-                      </button>
-                    </div>
-                    <span className="font-sans text-xs text-on-surface-variant mt-0.5 line-clamp-1">
-                      {order.details}
-                    </span>
-                    <span className="font-sans text-[11px] text-primary mt-1 font-semibold">
-                      Dir: {order.address} • {formatTime(order)}
-                    </span>
+                  {/* Top Row: Client Name on Left, Eye Badge on Far Right */}
+                  <div className="flex items-center justify-between w-full gap-2">
+                    <span className="font-sans font-bold text-sm text-on-surface truncate">{order.customerName}</span>
+                    {/* Clickable Tail (Opposite Side) */}
+                    <button
+                      onClick={() => onSelectOrderDetail(order)}
+                      title="Ver información completa del pedido"
+                      className="text-[10px] font-sans font-bold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300/60 px-2.5 py-0.5 rounded-full transition-all active:scale-95 flex items-center gap-1 shadow-xs shrink-0"
+                    >
+                      <span>{order.id}</span>
+                      <span className="material-symbols-outlined text-[11px]">visibility</span>
+                    </button>
                   </div>
 
-                  <div className="flex items-center gap-2 w-full sm:w-auto self-end sm:self-center shrink-0">
-                    <button
-                      onClick={() => onConfirmOrder(order.id)}
-                      className="w-full sm:w-auto bg-[#059669] hover:bg-emerald-600 text-white font-sans font-semibold text-xs py-2 px-3.5 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-sm shadow-emerald-700/20"
-                    >
-                      <span className="material-symbols-outlined text-sm">check</span>
-                      Confirmar
-                    </button>
+                  {/* Middle / Bottom Row: Details and Confirm Button */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2.5 pt-1">
+                    <div className="flex flex-col min-w-0 flex-1">
+                      <span className="font-sans text-xs text-on-surface-variant line-clamp-1">
+                        {order.details}
+                      </span>
+                      <span className="font-sans text-[11px] text-primary mt-0.5 font-semibold">
+                        Dir: {order.address} • {formatTime(order)}
+                      </span>
+                    </div>
+
+                    <div className="w-full sm:w-auto self-end sm:self-auto shrink-0">
+                      <button
+                        onClick={() => onConfirmOrder(order.id)}
+                        className="w-full sm:w-auto bg-[#059669] hover:bg-emerald-600 text-white font-sans font-semibold text-xs py-2 px-3.5 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-sm shadow-emerald-700/20"
+                      >
+                        <span className="material-symbols-outlined text-sm">check</span>
+                        Confirmar
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -281,45 +286,50 @@ export default function OrdersManager({
                   {filteredConfirmedUnDispatched.map((order) => (
                     <div
                       key={order.id}
-                      className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3.5 sm:p-4 bg-emerald-50/40 border-l-4 border-l-emerald-600 border border-emerald-500/20 rounded-xl gap-3 hover:border-emerald-500/40 transition-all duration-200 shadow-xs"
+                      className="flex flex-col justify-between p-3.5 sm:p-4 bg-emerald-50/40 border-l-4 border-l-emerald-600 border border-emerald-500/20 rounded-xl gap-3 hover:border-emerald-500/40 transition-all duration-200 shadow-xs"
                     >
-                      <div className="flex flex-col min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-sans font-bold text-sm text-on-surface">{order.customerName}</span>
-                          <button
-                            onClick={() => onSelectOrderDetail(order)}
-                            title="Ver información completa del pedido"
-                            className="text-[10px] font-sans font-bold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300/60 px-2.5 py-0.5 rounded-full transition-all active:scale-95 flex items-center gap-1 shadow-xs"
-                          >
-                            <span>{order.id}</span>
-                            <span className="material-symbols-outlined text-[11px]">visibility</span>
-                          </button>
-                        </div>
-                        <span className="font-sans text-xs text-on-surface-variant mt-0.5 line-clamp-1">
-                          {order.details}
-                        </span>
-                        <span className="font-sans text-[11px] text-emerald-800 mt-1 font-semibold">
-                          Dir: {order.address} • {formatTime(order)}
-                        </span>
+                      {/* Top Row: Client Name on Left, Eye Badge on Far Right */}
+                      <div className="flex items-center justify-between w-full gap-2">
+                        <span className="font-sans font-bold text-sm text-on-surface truncate">{order.customerName}</span>
+                        <button
+                          onClick={() => onSelectOrderDetail(order)}
+                          title="Ver información completa del pedido"
+                          className="text-[10px] font-sans font-bold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300/60 px-2.5 py-0.5 rounded-full transition-all active:scale-95 flex items-center gap-1 shadow-xs shrink-0"
+                        >
+                          <span>{order.id}</span>
+                          <span className="material-symbols-outlined text-[11px]">visibility</span>
+                        </button>
                       </div>
 
-                      <div className="flex items-center gap-2 w-full sm:w-auto self-end sm:self-center shrink-0">
-                        <button
-                          onClick={() => onRequestReverse(order)}
-                          title="Reversar a pendientes"
-                          className="bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-sans font-semibold text-xs py-2 px-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1 border border-outline-variant/20"
-                        >
-                          <span className="material-symbols-outlined text-sm">undo</span>
-                          <span className="hidden sm:inline">Reversar</span>
-                        </button>
+                      {/* Middle / Bottom Row: Details and Actions */}
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2.5 pt-1">
+                        <div className="flex flex-col min-w-0 flex-1">
+                          <span className="font-sans text-xs text-on-surface-variant line-clamp-1">
+                            {order.details}
+                          </span>
+                          <span className="font-sans text-[11px] text-emerald-800 mt-0.5 font-semibold">
+                            Dir: {order.address} • {formatTime(order)}
+                          </span>
+                        </div>
 
-                        <button
-                          onClick={() => onDispatchOrder(order.id)}
-                          className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-sans font-semibold text-xs py-2 px-3.5 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-sm shadow-amber-600/20"
-                        >
-                          <span className="material-symbols-outlined text-sm">moped</span>
-                          <span>Despachar</span>
-                        </button>
+                        <div className="flex items-center gap-2 w-full sm:w-auto self-end sm:self-auto shrink-0">
+                          <button
+                            onClick={() => onRequestReverse(order)}
+                            title="Reversar a pendientes"
+                            className="bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-sans font-semibold text-xs py-2 px-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1 border border-outline-variant/20 flex-1 sm:flex-none"
+                          >
+                            <span className="material-symbols-outlined text-sm">undo</span>
+                            <span>Reversar</span>
+                          </button>
+
+                          <button
+                            onClick={() => onDispatchOrder(order.id)}
+                            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-sans font-semibold text-xs py-2 px-3.5 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-sm shadow-amber-600/20 flex-1 sm:flex-none"
+                          >
+                            <span className="material-symbols-outlined text-sm">moped</span>
+                            <span>Despachar</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -339,38 +349,42 @@ export default function OrdersManager({
                   {filteredDispatched.map((order) => (
                     <div
                       key={order.id}
-                      className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3.5 sm:p-4 bg-amber-50/50 border-l-4 border-l-amber-500 border border-amber-400/30 rounded-xl gap-3 hover:border-amber-500/50 transition-all duration-200 shadow-xs"
+                      className="flex flex-col justify-between p-3.5 sm:p-4 bg-amber-50/50 border-l-4 border-l-amber-500 border border-amber-400/30 rounded-xl gap-3 hover:border-amber-500/50 transition-all duration-200 shadow-xs"
                     >
-                      <div className="flex flex-col min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-sans font-bold text-sm text-on-surface">{order.customerName}</span>
-                          {/* Amber Tail */}
-                          <button
-                            onClick={() => onSelectOrderDetail(order)}
-                            title="Ver información completa del pedido"
-                            className="text-[10px] font-sans font-extrabold text-amber-950 bg-gradient-to-r from-amber-200 via-amber-100 to-amber-200 hover:from-amber-300 hover:to-amber-200 border border-amber-400/80 px-2.5 py-0.5 rounded-full transition-all active:scale-95 flex items-center gap-1 shadow-xs"
-                          >
-                            <span>{order.id}</span>
-                            <span className="material-symbols-outlined text-[11px] text-amber-800">visibility</span>
-                          </button>
-                        </div>
-                        <span className="font-sans text-xs text-on-surface-variant mt-0.5 line-clamp-1">
-                          {order.details}
-                        </span>
-                        <span className="font-sans text-[11px] text-amber-900 mt-1 font-semibold">
-                          Dir: {order.address} • {formatTime(order)}
-                        </span>
+                      {/* Top Row: Client Name on Left, Amber Eye Badge on Far Right */}
+                      <div className="flex items-center justify-between w-full gap-2">
+                        <span className="font-sans font-bold text-sm text-on-surface truncate">{order.customerName}</span>
+                        <button
+                          onClick={() => onSelectOrderDetail(order)}
+                          title="Ver información completa del pedido"
+                          className="text-[10px] font-sans font-extrabold text-amber-950 bg-gradient-to-r from-amber-200 via-amber-100 to-amber-200 hover:from-amber-300 hover:to-amber-200 border border-amber-400/80 px-2.5 py-0.5 rounded-full transition-all active:scale-95 flex items-center gap-1 shadow-xs shrink-0"
+                        >
+                          <span>{order.id}</span>
+                          <span className="material-symbols-outlined text-[11px] text-amber-800">visibility</span>
+                        </button>
                       </div>
 
-                      <div className="flex items-center gap-2 w-full sm:w-auto self-end sm:self-center shrink-0">
-                        <button
-                          onClick={() => onRequestReverse(order)}
-                          title="Reversar a pendientes"
-                          className="bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-sans font-semibold text-xs py-2 px-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1 border border-outline-variant/20"
-                        >
-                          <span className="material-symbols-outlined text-sm">undo</span>
-                          <span>Reversar</span>
-                        </button>
+                      {/* Middle / Bottom Row: Details and Reverse Action */}
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2.5 pt-1">
+                        <div className="flex flex-col min-w-0 flex-1">
+                          <span className="font-sans text-xs text-on-surface-variant line-clamp-1">
+                            {order.details}
+                          </span>
+                          <span className="font-sans text-[11px] text-amber-900 mt-0.5 font-semibold">
+                            Dir: {order.address} • {formatTime(order)}
+                          </span>
+                        </div>
+
+                        <div className="w-full sm:w-auto self-end sm:self-auto shrink-0">
+                          <button
+                            onClick={() => onRequestReverse(order)}
+                            title="Reversar a pendientes"
+                            className="w-full sm:w-auto bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-sans font-semibold text-xs py-2 px-3.5 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1 border border-outline-variant/20"
+                          >
+                            <span className="material-symbols-outlined text-sm">undo</span>
+                            <span>Reversar</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}

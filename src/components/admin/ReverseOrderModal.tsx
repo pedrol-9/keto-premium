@@ -14,8 +14,8 @@ export default function ReverseOrderModal({
   if (!order) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fadeIn">
-      <div className="bg-surface-container-lowest w-full max-w-md rounded-[24px] p-6 sm:p-8 shadow-[0px_20px_60px_rgba(0,0,0,0.2)] border border-outline-variant/15 flex flex-col gap-5 animate-scaleUp">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 sm:p-6 pb-20 sm:pb-6 animate-fadeIn">
+      <div className="bg-surface-container-lowest w-full max-w-md rounded-[24px] p-6 sm:p-8 shadow-[0px_20px_60px_rgba(0,0,0,0.3)] border border-outline-variant/15 flex flex-col gap-5 animate-scaleUp">
         {/* Header Icon */}
         <div className="flex items-center gap-3.5">
           <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-700 flex items-center justify-center border border-amber-500/20 shrink-0">
