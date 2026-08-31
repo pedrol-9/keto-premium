@@ -12,12 +12,11 @@ export default function AdminLoginPage() {
   const [pin, setPin] = useState<string>("");
   const [isError, setIsError] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [biometricAvailable, setBiometricAvailable] = useState<boolean>(false);
-  const [biometricRegistered, setBiometricRegistered] = useState<boolean>(false);
+  const [biometricAvailable, setBiometricAvailable] = useState<boolean>(true);
   const [biometricLoading, setBiometricLoading] = useState<boolean>(false);
   const [showBiometricPrompt, setShowBiometricPrompt] = useState<boolean>(false);
 
-  // Check if WebAuthn is supported & if a credential already exists
+  // Check if WebAuthn is supported
   useEffect(() => {
     if (
       typeof window !== "undefined" &&
@@ -28,11 +27,9 @@ export default function AdminLoginPage() {
       window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
         .then((available) => {
           setBiometricAvailable(available);
-          const hasCred = !!localStorage.getItem("kb_biometric_credential_id");
-          setBiometricRegistered(hasCred);
         })
         .catch(() => {
-          setBiometricAvailable(false);
+          setBiometricAvailable(true); // default true for modern mobile PWAs
         });
     }
   }, []);
@@ -47,7 +44,7 @@ export default function AdminLoginPage() {
     } else {
       setTimeout(() => {
         router.push("/admin/dashboard");
-      }, 400);
+      }, 350);
     }
   }, [biometricAvailable, router]);
 
@@ -125,7 +122,6 @@ export default function AdminLoginPage() {
           String.fromCharCode(...new Uint8Array(credential.rawId))
         );
         localStorage.setItem("kb_biometric_credential_id", credId);
-        setBiometricRegistered(true);
       }
     } catch (e) {
       console.warn("Biometric registration cancelled or failed:", e);
@@ -141,18 +137,20 @@ export default function AdminLoginPage() {
     router.push("/admin/dashboard");
   };
 
-  // Biometric login (WebAuthn get assertion)
-  const handleBiometricLogin = async () => {
+  // Biometric action trigger (Login or First-time setup)
+  const handleBiometricAction = async () => {
+    const savedCredId = typeof window !== "undefined" ? localStorage.getItem("kb_biometric_credential_id") : null;
+
+    // If not registered yet, prompt directly to register
+    if (!savedCredId) {
+      setShowBiometricPrompt(true);
+      return;
+    }
+
+    // Otherwise authenticate via stored assertion
     try {
       setBiometricLoading(true);
       setIsError(false);
-
-      const savedCredId = localStorage.getItem("kb_biometric_credential_id");
-      if (!savedCredId) {
-        setIsError(true);
-        setBiometricLoading(false);
-        return;
-      }
 
       const rawChallenge = crypto.getRandomValues(new Uint8Array(32));
       const challengeBuffer = new ArrayBuffer(rawChallenge.byteLength);
@@ -213,17 +211,17 @@ export default function AdminLoginPage() {
   }, [handleInput, handleDelete, showBiometricPrompt]);
 
   return (
-    <div className="bg-background min-h-screen flex flex-col items-center justify-center font-sans text-on-surface antialiased overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container relative py-4 sm:py-6 px-4">
+    <div className="bg-background h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col items-center justify-center font-sans text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container relative px-4 py-2">
       {/* Decorative ambient background */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-25">
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-20">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-surface-container-high blur-3xl mix-blend-multiply"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-surface-container-low blur-3xl mix-blend-multiply"></div>
       </div>
 
       {/* ── Biometric registration prompt overlay ── */}
       {showBiometricPrompt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-surface-container-lowest w-full max-w-sm rounded-[24px] p-6 sm:p-7 shadow-[0px_20px_60px_rgba(0,0,0,0.2)] border border-outline-variant/10 flex flex-col items-center gap-4 animate-scaleUp">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-fadeIn">
+          <div className="bg-surface-container-lowest w-full max-w-sm rounded-[24px] p-6 sm:p-7 shadow-[0px_20px_60px_rgba(0,0,0,0.3)] border border-outline-variant/10 flex flex-col items-center gap-4 animate-scaleUp">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
               <span
                 className="material-symbols-outlined text-[36px] text-primary"
@@ -238,7 +236,7 @@ export default function AdminLoginPage() {
                 Acceso biométrico
               </h2>
               <p className="font-sans text-xs text-on-surface-variant mt-1 leading-relaxed max-w-[260px]">
-                Activa la huella digital o Face ID para entrar al panel con un toque.
+                Activa tu huella digital o Face ID para entrar al panel con un toque.
               </p>
             </div>
 
@@ -262,16 +260,17 @@ export default function AdminLoginPage() {
         </div>
       )}
 
-      {/* ── Main Compact Container ── */}
-      <main className="relative z-10 w-full max-w-[360px] flex flex-col items-center">
+      {/* ── Main Zero-Scroll Compact Container ── */}
+      <main className="relative z-10 w-full max-w-[350px] flex flex-col items-center">
         {/* Header / Logo */}
-        <header className="text-center mb-4 flex flex-col items-center">
+        <header className="text-center mb-3 flex flex-col items-center">
           <Link
             href="/"
-            className="w-12 h-12 rounded-2xl bg-surface-container-lowest shadow-[0px_4px_20px_rgba(0,0,0,0.03)] flex items-center justify-center mb-2 border border-outline-variant/10 hover:opacity-90 active:scale-95 transition-all"
+            className="w-14 h-14 rounded-2xl bg-surface-container-lowest shadow-[0px_4px_20px_rgba(0,0,0,0.04)] flex items-center justify-center mb-2 border border-outline-variant/10 hover:opacity-90 active:scale-95 transition-all"
+            title="Volver a la tienda"
           >
             <span
-              className="material-symbols-outlined text-[26px] text-primary"
+              className="material-symbols-outlined text-[32px] text-primary"
               style={{ fontVariationSettings: "'FILL' 1" }}
             >
               shield_lock
@@ -280,13 +279,13 @@ export default function AdminLoginPage() {
           <h1 className="font-display font-bold text-xl sm:text-2xl text-primary tracking-tight">
             KetoBoutique
           </h1>
-          <p className="font-sans text-xs text-on-surface-variant mt-0.5 text-center">
+          <p className="font-sans text-[11px] text-on-surface-variant mt-0.5 text-center">
             Área administrativa protegida
           </p>
         </header>
 
         {/* Login Card */}
-        <section className="bg-surface-container-lowest w-full rounded-[22px] p-5 sm:p-6 shadow-[0px_10px_40px_rgba(0,0,0,0.05)] flex flex-col items-center relative overflow-hidden border border-outline-variant/10">
+        <section className="bg-surface-container-lowest w-full rounded-[22px] p-4 sm:p-5 shadow-[0px_10px_40px_rgba(0,0,0,0.05)] flex flex-col items-center relative overflow-hidden border border-outline-variant/10">
           {/* Error Message Overlay */}
           <div
             className={`absolute top-0 left-0 w-full bg-error-container text-on-error-container font-sans font-semibold text-xs py-2 text-center transition-all duration-300 z-20 flex items-center justify-center gap-1.5 ${
@@ -297,11 +296,11 @@ export default function AdminLoginPage() {
             {biometricLoading ? "Error biométrico" : "PIN Incorrecto"}
           </div>
 
-          {/* ── Compact Biometric login button ── */}
-          {biometricRegistered && !isSuccess && (
+          {/* ── Symmetrical Biometric Bar (Always Visible & Accessible) ── */}
+          {!isSuccess && (
             <div className="w-full mb-3">
               <button
-                onClick={handleBiometricLogin}
+                onClick={handleBiometricAction}
                 disabled={biometricLoading}
                 className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-primary/25 bg-primary/5 hover:bg-primary/10 active:scale-[0.98] transition-all disabled:opacity-60 group shadow-xs"
               >
@@ -318,10 +317,12 @@ export default function AdminLoginPage() {
                 </span>
               </button>
 
-              {/* Minimal Divider */}
-              <div className="flex items-center gap-2 w-full mt-3">
+              {/* Minimal Symmetrical Divider */}
+              <div className="flex items-center gap-2.5 w-full mt-2.5">
                 <div className="flex-1 h-px bg-outline-variant/15" />
-                <span className="font-sans text-[11px] text-on-surface-variant/50">o PIN</span>
+                <span className="font-sans text-[10px] uppercase font-bold tracking-wider text-on-surface-variant/50">
+                  o usa tu PIN
+                </span>
                 <div className="flex-1 h-px bg-outline-variant/15" />
               </div>
             </div>
@@ -329,13 +330,13 @@ export default function AdminLoginPage() {
 
           {/* PIN Display Dots */}
           <div
-            className={`flex gap-3.5 mb-5 mt-1 h-3.5 items-center justify-center w-full transition-all ${
+            className={`flex gap-3 mb-4 mt-0.5 h-3 items-center justify-center w-full transition-all ${
               isError ? "animate-shake" : ""
             }`}
           >
             {[...Array(MAX_LENGTH)].map((_, index) => {
               const isFilled = index < pin.length;
-              let dotClass = "w-3 h-3 rounded-full transition-all duration-200 ";
+              let dotClass = "w-2.5 h-2.5 rounded-full transition-all duration-200 ";
 
               if (isSuccess) {
                 dotClass += "bg-primary-container scale-110";
@@ -351,30 +352,30 @@ export default function AdminLoginPage() {
             })}
           </div>
 
-          {/* Numpad Grid (Compact & Ergonomic) */}
-          <div className="grid grid-cols-3 gap-x-3 sm:gap-x-4 gap-y-2.5 sm:gap-y-3 w-full px-1">
+          {/* Numpad Grid (Compact & Ergonomic for Samsung A16 PWA) */}
+          <div className="grid grid-cols-3 gap-x-3 gap-y-2 w-full px-1">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
               <button
                 key={num}
                 onClick={() => handleInput(num.toString())}
-                className="w-14 h-14 sm:w-15 sm:h-15 rounded-full mx-auto flex items-center justify-center font-display font-semibold text-lg text-on-surface bg-surface-container-lowest border border-outline-variant/15 hover:bg-surface-container-low active:scale-95 focus:outline-none transition-all duration-100 shadow-xs"
+                className="w-13 h-13 sm:w-14 sm:h-14 rounded-full mx-auto flex items-center justify-center font-display font-semibold text-lg text-on-surface bg-surface-container-lowest border border-outline-variant/15 hover:bg-surface-container-low active:scale-95 focus:outline-none transition-all duration-100 shadow-xs"
               >
                 {num}
               </button>
             ))}
 
             {/* Row 4 */}
-            <div className="w-14 h-14 sm:w-15 sm:h-15 mx-auto" />
+            <div className="w-13 h-13 sm:w-14 sm:h-14 mx-auto" />
             <button
               onClick={() => handleInput("0")}
-              className="w-14 h-14 sm:w-15 sm:h-15 rounded-full mx-auto flex items-center justify-center font-display font-semibold text-lg text-on-surface bg-surface-container-lowest border border-outline-variant/15 hover:bg-surface-container-low active:scale-95 focus:outline-none transition-all duration-100 shadow-xs"
+              className="w-13 h-13 sm:w-14 sm:h-14 rounded-full mx-auto flex items-center justify-center font-display font-semibold text-lg text-on-surface bg-surface-container-lowest border border-outline-variant/15 hover:bg-surface-container-low active:scale-95 focus:outline-none transition-all duration-100 shadow-xs"
             >
               0
             </button>
             <button
               aria-label="Delete"
               onClick={handleDelete}
-              className="w-14 h-14 sm:w-15 sm:h-15 rounded-full mx-auto flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low active:scale-95 focus:outline-none transition-all duration-100"
+              className="w-13 h-13 sm:w-14 sm:h-14 rounded-full mx-auto flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low active:scale-95 focus:outline-none transition-all duration-100"
             >
               <span className="material-symbols-outlined text-[20px]">backspace</span>
             </button>
