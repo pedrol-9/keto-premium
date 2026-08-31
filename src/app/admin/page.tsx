@@ -15,11 +15,15 @@ function isBiometricSupported(): boolean {
   );
 }
 
-function getStoredCredId(): Uint8Array | null {
+function getStoredCredId(): Uint8Array<ArrayBuffer> | null {
   try {
     const stored = localStorage.getItem(BIOMETRIC_CRED_KEY);
     if (!stored) return null;
-    return Uint8Array.from(atob(stored), (c) => c.charCodeAt(0));
+    const raw = Uint8Array.from(atob(stored), (c) => c.charCodeAt(0));
+    // Re-wrap in a concrete ArrayBuffer so TypeScript's WebAuthn types are satisfied
+    const buf = new ArrayBuffer(raw.length);
+    new Uint8Array(buf).set(raw);
+    return new Uint8Array(buf);
   } catch {
     return null;
   }
@@ -29,10 +33,10 @@ async function registerBiometric(): Promise<boolean> {
   try {
     const credential = (await navigator.credentials.create({
       publicKey: {
-        challenge: crypto.getRandomValues(new Uint8Array(32)),
+        challenge: crypto.getRandomValues(new Uint8Array(new ArrayBuffer(32))),
         rp: { name: "KetoBoutique Admin", id: window.location.hostname },
         user: {
-          id: crypto.getRandomValues(new Uint8Array(16)),
+          id: crypto.getRandomValues(new Uint8Array(new ArrayBuffer(16))),
           name: "admin@ketoboutique",
           displayName: "Admin",
         },
@@ -66,7 +70,7 @@ async function authenticateWithBiometric(): Promise<boolean> {
 
     await navigator.credentials.get({
       publicKey: {
-        challenge: crypto.getRandomValues(new Uint8Array(32)),
+        challenge: crypto.getRandomValues(new Uint8Array(new ArrayBuffer(32))),
         allowCredentials: [
           { id: credId, type: "public-key", transports: ["internal"] },
         ],
