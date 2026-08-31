@@ -268,16 +268,16 @@ export default function CartPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-on-background font-sans antialiased selection:bg-primary-container selection:text-on-primary-container relative overflow-x-hidden">
+    <div className="flex flex-col min-h-screen bg-background text-on-background font-sans antialiased selection:bg-primary-container selection:text-on-primary-container relative w-full max-w-full overflow-x-clip">
       {/* Ambient Joyful & Vital Glows */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px]" />
-        <div className="absolute top-1/3 -right-24 w-96 h-96 bg-amber-400/10 rounded-full blur-[120px]" />
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden w-full h-full max-w-full">
+        <div className="absolute -top-24 -left-24 w-80 sm:w-96 h-80 sm:h-96 bg-emerald-500/10 rounded-full blur-[90px]" />
+        <div className="absolute top-1/3 -right-24 w-80 sm:w-96 h-80 sm:h-96 bg-amber-400/10 rounded-full blur-[100px]" />
       </div>
 
       {/* Main Content Canvas */}
-      <main className="max-w-7xl mx-auto pt-28 pb-32 px-6 md:px-16 flex-1 w-full relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+      <main className="max-w-7xl mx-auto pt-24 sm:pt-28 pb-32 px-4 sm:px-6 md:px-16 flex-1 w-full max-w-full relative z-10 min-w-0">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
           {/* Cart Items Section */}
           <div className="md:col-span-7 lg:col-span-8 flex flex-col gap-6">
             <div className="flex items-center justify-between mb-2">

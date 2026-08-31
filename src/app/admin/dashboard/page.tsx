@@ -171,6 +171,7 @@ export default function AdminDashboardPage() {
           const mappedOrders: Order[] = dbOrders.map((o) => ({
             id: o.id,
             customerName: o.customer_name,
+            phone: o.phone || undefined,
             details: o.details,
             address: o.address,
             total: o.total,
@@ -268,6 +269,7 @@ export default function AdminDashboardPage() {
               const mappedOrders: Order[] = dbOrders.map((o) => ({
                 id: o.id,
                 customerName: o.customer_name,
+                phone: o.phone || undefined,
                 details: o.details,
                 address: o.address,
                 total: o.total,

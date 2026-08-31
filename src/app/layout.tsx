@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Manrope, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 
@@ -21,6 +21,14 @@ const cormorant = Cormorant_Garamond({
   style: ["normal", "italic"],
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: "#ffffff",
+};
 
 export const metadata: Metadata = {
   title: "KetoBoutique - Come con propósito, disfruta sin límites",
@@ -47,21 +55,19 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${inter.variable} ${manrope.variable} ${cormorant.variable} h-full antialiased overflow-x-hidden`}
+      className={`${inter.variable} ${manrope.variable} ${cormorant.variable} h-full antialiased`}
     >
       <head>
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         />
-        {/* Splash screen / chrome color — blanco para que el fondo de la app no sea negro */}
         <meta name="theme-color" content="#ffffff" />
         <meta name="msapplication-TileColor" content="#ffffff" />
       </head>
-      <body className="min-h-full flex flex-col bg-[#f8f9fa] text-[#191c1d] overflow-x-hidden">
+      <body className="min-h-full flex flex-col bg-[#f8f9fa] text-[#191c1d] w-full max-w-full overflow-x-hidden">
         {children}
       </body>
     </html>
   );
 }
-

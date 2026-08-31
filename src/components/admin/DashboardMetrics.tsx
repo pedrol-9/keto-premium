@@ -12,7 +12,7 @@ export default function DashboardMetrics({
   conversionRate,
 }: DashboardMetricsProps) {
   return (
-    <section className="md:col-span-8 grid grid-cols-1 min-[380px]:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <section className="md:col-span-8 grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
       {/* Metric Card 1: Visitas */}
       <div className="bg-surface-container-lowest border border-outline-variant/10 rounded-2xl p-6 flex flex-col justify-between gap-4 relative overflow-hidden group shadow-[0px_4px_20px_rgba(0,0,0,0.03)]">
         <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">

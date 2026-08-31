@@ -30,7 +30,7 @@ export default function AdminHeader({
 
   return (
     <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm border-b border-outline-variant/10">
-      <div className="flex justify-between items-center px-4 sm:px-6 md:px-16 h-20 max-w-7xl mx-auto">
+      <div className="flex justify-between items-center px-2 xs:px-4 sm:px-6 md:px-16 h-20 max-w-7xl mx-auto">
         {/* Logo */}
         <div className="flex items-center">
           <BrandLogo />

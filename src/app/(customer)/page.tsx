@@ -157,19 +157,19 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-on-background font-sans antialiased selection:bg-primary-container selection:text-on-primary-container relative overflow-x-hidden">
+    <div className="flex flex-col min-h-screen bg-background text-on-background font-sans antialiased selection:bg-primary-container selection:text-on-primary-container relative w-full max-w-full overflow-x-clip">
 
       {/* Ambient Joyful & Vital Glows */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px]" />
-        <div className="absolute top-1/4 -right-24 w-96 h-96 bg-amber-400/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/3 left-10 w-80 h-80 bg-teal-400/8 rounded-full blur-[100px]" />
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden w-full h-full max-w-full">
+        <div className="absolute -top-24 -left-24 w-80 sm:w-96 h-80 sm:h-96 bg-emerald-500/10 rounded-full blur-[90px]" />
+        <div className="absolute top-1/4 -right-24 w-80 sm:w-96 h-80 sm:h-96 bg-amber-400/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/3 left-10 w-72 sm:w-80 h-72 sm:h-80 bg-teal-400/8 rounded-full blur-[90px]" />
       </div>
 
       {/* Main Content Canvas */}
-      <main className="max-w-7xl mx-auto pt-28 pb-32 px-6 md:px-16 flex-1 w-full relative z-10">
+      <main className="max-w-7xl mx-auto pt-24 sm:pt-28 pb-32 px-4 sm:px-6 md:px-16 flex-1 w-full max-w-full relative z-10 min-w-0">
         {/* Hero Section */}
-        <section className="mb-16 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8">
+        <section className="mb-12 sm:mb-16 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="md:w-1/2 flex flex-col gap-3.5">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 text-xs font-bold w-fit mx-auto md:mx-0 shadow-xs">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -178,16 +178,16 @@ export default function Home() {
             <p className="font-serif italic text-xl md:text-2xl font-semibold tracking-wide bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
               &ldquo;{t.slogan}&rdquo;
             </p>
-            <h2 className="font-display font-black text-4xl md:text-5xl text-on-surface leading-tight tracking-tight">
+            <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl text-on-surface leading-tight tracking-tight">
               {t.heroTitle}
             </h2>
-            <p className="font-sans text-base md:text-lg text-on-surface-variant max-w-md mx-auto md:mx-0 leading-relaxed">
+            <p className="font-sans text-sm sm:text-base md:text-lg text-on-surface-variant max-w-md mx-auto md:mx-0 leading-relaxed">
               {t.heroDesc}
             </p>
           </div>
           <div className="w-full md:w-1/2">
             <div
-              className="w-full h-64 md:h-80 rounded-3xl overflow-hidden shadow-[0px_16px_40px_rgba(5,150,105,0.08)] relative bg-surface-container-high bg-cover bg-center ring-1 ring-emerald-500/10"
+              className="w-full h-60 sm:h-64 md:h-80 rounded-3xl overflow-hidden shadow-[0px_16px_40px_rgba(5,150,105,0.08)] relative bg-surface-container-high bg-cover bg-center ring-1 ring-emerald-500/10"
               style={{
                 backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuBYpKpJ4awhfJ-3cCrh5KH1lOvl7oy9I-qWEMyzbviFnD6y90O6-MRcBkTCyZWwvS_OxEofMqxIftwxFET_6GOL9kd1FP-_KItAa9igbQGgpwRkNtV8zoIwRYfNo1pfKhtfVFfDUDm6oqCxHcG_1w2dHQkvBf5ap9ennqYF9_uGFR_fAO9P12NGpP5p80aHRnBoikcWkIrfhNdU3ibwd_NRKNPd0Kblgrfj6huRYExGVVRYpscAoHrEe3MwSdr_ddEA2-CkhbS05Te6')`,
               }}
@@ -198,7 +198,7 @@ export default function Home() {
         </section>
 
         {/* Nutrition Filter Chips */}
-        <div className="flex gap-3 overflow-x-auto pb-4 mb-8 scrollbar-none">
+        <div className="flex gap-2.5 sm:gap-3 overflow-x-auto pb-4 mb-8 scrollbar-none w-full max-w-full min-w-0">
           <button
             onClick={() => setActiveCategory("Todos")}
             className={`px-5 py-2.5 rounded-full font-sans font-bold text-sm whitespace-nowrap transition-all ${

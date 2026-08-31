@@ -10,12 +10,11 @@ interface BrandLogoProps {
 
 export function BrandIcon({ className = "" }: { className?: string }) {
   return (
-    /* Contenedor circular — 74px ≈ 92% de los 80px del header */
     <div
       className={`
         kb-icon-wrap
         relative flex items-center justify-center
-        w-[74px] h-[74px] shrink-0
+        w-[48px] h-[48px] xs:w-[56px] xs:h-[56px] sm:w-[72px] sm:h-[72px] shrink-0
         rounded-full overflow-hidden
         group-hover:scale-105 transition-all duration-300
         ${className}
@@ -34,7 +33,6 @@ export function BrandIcon({ className = "" }: { className?: string }) {
         "
       />
 
-      {/* Keyframe inline para el float — se inyecta en el mismo componente */}
       <style>{`
         @keyframes kb-float {
           0%   { transform: translateY(0px) rotate(0deg); }
@@ -56,12 +54,12 @@ export default function BrandLogo({ showSlogan = false, className = "" }: BrandL
   return (
     <Link
       href="/"
-      className={`inline-flex items-center gap-3 select-none group ${className}`}
+      className={`inline-flex items-center gap-1.5 xs:gap-2 sm:gap-3 select-none group min-w-0 shrink ${className}`}
     >
       <BrandIcon />
 
-      <div className="flex flex-col justify-center">
-        <div className="font-display font-extrabold tracking-tight leading-none text-xl sm:text-2xl md:text-[26px]">
+      <div className="flex flex-col justify-center min-w-0">
+        <div className="font-display font-extrabold tracking-tight leading-none text-base xs:text-lg sm:text-2xl md:text-[26px]">
           <span className="bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 bg-clip-text text-transparent group-hover:from-emerald-500 group-hover:to-teal-400 transition-all">
             Keto
           </span>
@@ -70,7 +68,7 @@ export default function BrandLogo({ showSlogan = false, className = "" }: BrandL
           </span>
         </div>
         {showSlogan && (
-          <span className="font-serif italic font-semibold text-[10px] sm:text-[11px] text-emerald-800/80 tracking-wider mt-0.5 uppercase">
+          <span className="font-serif italic font-semibold text-[9px] xs:text-[10px] sm:text-[11px] text-emerald-800/80 tracking-wider mt-0.5 uppercase truncate">
             Haute Cuisine
           </span>
         )}
