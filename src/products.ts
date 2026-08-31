@@ -92,4 +92,4 @@ export const PRODUCTS: Product[] = [
 export const WHATSAPP_NUMBER = '573133417707'; // <-- Cambiar al número real
 
 // PIN del panel de administración
-export const ADMIN_PIN = '000178';
+export const ADMIN_PIN = '0154';
