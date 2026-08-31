@@ -21,11 +21,21 @@ export default function OrderDetailModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fadeIn">
-      <div className="bg-surface-container-lowest w-full max-w-lg rounded-[28px] p-6 sm:p-8 shadow-[0px_25px_70px_rgba(0,0,0,0.25)] border border-outline-variant/15 flex flex-col gap-6 animate-scaleUp max-h-[90vh] overflow-y-auto">
+      <div className="bg-surface-container-lowest w-full max-w-lg rounded-[28px] p-6 sm:p-8 shadow-[0px_25px_70px_rgba(0,0,0,0.25)] border border-outline-variant/15 flex flex-col gap-6 animate-scaleUp max-h-[90vh] overflow-y-auto relative">
+        {/* Close Button (Corner Aligned) */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-surface-container-low hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-all active:scale-95 z-10"
+          title="Cerrar"
+          aria-label="Cerrar modal"
+        >
+          <span className="material-symbols-outlined text-[18px]">close</span>
+        </button>
+
         {/* Modal Header */}
-        <div className="flex items-start justify-between border-b border-outline-variant/10 pb-4">
+        <div className="flex items-start justify-between border-b border-outline-variant/10 pb-4 pr-8">
           <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="font-sans font-black text-lg sm:text-xl text-on-surface">
                 Pedido #{order.id}
               </span>
@@ -49,13 +59,6 @@ export default function OrderDetailModal({
               Registrado: {formatTime(order)}
             </span>
           </div>
-
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-surface-container-low hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-colors"
-          >
-            <span className="material-symbols-outlined text-[20px]">close</span>
-          </button>
         </div>
 
         {/* Info Grid */}
