@@ -211,11 +211,11 @@ export default function AdminLoginPage() {
   }, [handleInput, handleDelete, showBiometricPrompt]);
 
   return (
-    <div className="bg-background h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col items-center justify-center font-sans text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container relative px-4 py-2">
+    <div className="fixed inset-0 w-full h-full bg-background overflow-hidden flex flex-col items-center justify-center font-sans text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container p-4 overscroll-none touch-none">
       {/* Decorative ambient background */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-20">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-surface-container-high blur-3xl mix-blend-multiply"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-surface-container-low blur-3xl mix-blend-multiply"></div>
+        <div className="absolute top-0 left-0 w-64 h-64 rounded-full bg-surface-container-high blur-3xl mix-blend-multiply"></div>
+        <div className="absolute bottom-0 right-0 w-72 h-72 rounded-full bg-surface-container-low blur-3xl mix-blend-multiply"></div>
       </div>
 
       {/* ── Biometric registration prompt overlay ── */}
