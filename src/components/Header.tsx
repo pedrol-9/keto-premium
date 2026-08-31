@@ -1,17 +1,41 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { supabase, isConfigured } from "@/lib/supabase";
 import { Language, TRANSLATIONS } from "@/locales";
 import BrandLogo from "@/components/BrandLogo";
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const [storeStatus, setStoreStatus] = useState<"open" | "closed">("open");
   const [cartLength, setCartLength] = useState<number>(0);
   const [language, setLanguage] = useState<Language>("es");
+
+  // ── Secret admin easter egg ──────────────────────────────────────────────
+  const SECRET_TAPS = 12;
+  const TAP_RESET_MS = 3000; // reset tap count if idle for 3 s
+  const tapCountRef = useRef(0);
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleBadgeTap = useCallback(() => {
+    tapCountRef.current += 1;
+
+    // Reset the idle timer on every tap
+    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+    tapTimerRef.current = setTimeout(() => {
+      tapCountRef.current = 0;
+    }, TAP_RESET_MS);
+
+    if (tapCountRef.current >= SECRET_TAPS) {
+      tapCountRef.current = 0;
+      if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+      router.push("/admin");
+    }
+  }, [router]);
+  // ────────────────────────────────────────────────────────────────────────
 
   const t = TRANSLATIONS[language];
 
@@ -110,7 +134,7 @@ export default function Header() {
 
   return (
     <>
-    <header className="fixed top-0 w-full z-50 bg-gradient-to-r from-emerald-100/90 via-teal-50/70 to-white/90 backdrop-blur-md shadow-sm border-b border-emerald-200/30">
+    <header className="fixed top-0 w-full z-50 bg-gradient-to-r from-emerald-100/90 via-white/80 to-amber-100/80 backdrop-blur-md shadow-sm border-b border-emerald-200/30">
       <div className="flex justify-between items-center px-4 sm:px-6 md:px-16 h-20 max-w-7xl mx-auto">
         {/* Logo / Headline */}
         <div className="flex items-center">
@@ -149,8 +173,11 @@ export default function Header() {
         {/* Indicators and Language Toggle */}
         <div className="flex items-center gap-2 sm:gap-3">
 
-          {/* Store Status Indicator (Read-Only) */}
+          {/* Store Status Indicator — secret 12-tap easter egg para acceso admin */}
           <div
+            role="status"
+            aria-label={storeStatus === "closed" ? t.closed : t.open}
+            onClick={handleBadgeTap}
             className={`font-sans font-semibold text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full flex items-center gap-1.5 sm:gap-2 cursor-default select-none ${
               storeStatus === "closed"
                 ? "bg-error-container text-on-error-container"
