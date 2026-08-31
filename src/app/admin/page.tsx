@@ -212,6 +212,16 @@ export default function AdminLoginPage() {
 
   return (
     <div className="fixed inset-0 w-full h-full bg-background overflow-hidden flex flex-col items-center justify-center font-sans text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container p-4 overscroll-none touch-none">
+      {/* ── Top-Left Back Button ── */}
+      <Link
+        href="/"
+        className="absolute top-4 left-4 z-20 flex items-center gap-1 px-2.5 xs:px-3 py-1.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-md border border-outline-variant/15 text-on-surface-variant hover:text-primary font-sans text-xs font-semibold shadow-xs transition-all active:scale-95"
+        title="Volver a la tienda"
+      >
+        <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+        <span className="hidden xs:inline">Volver</span>
+      </Link>
+
       {/* Decorative ambient background */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-20">
         <div className="absolute top-0 left-0 w-64 h-64 rounded-full bg-surface-container-high blur-3xl mix-blend-multiply"></div>
@@ -295,6 +305,17 @@ export default function AdminLoginPage() {
             <span className="material-symbols-outlined text-[14px]">error</span>
             {biometricLoading ? "Error biométrico" : "PIN Incorrecto"}
           </div>
+
+          {/* Bottom Back Link */}
+        <div className="mt-2.5 text-center">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1 font-sans font-semibold text-[11px] text-on-surface-variant hover:text-primary transition-colors py-1 px-3 rounded-full hover:bg-surface-container-low"
+          >
+            <span className="material-symbols-outlined text-[15px]">arrow_back</span>
+            <span>Volver al menú</span>
+          </Link>
+        </div>
 
           {/* ── Symmetrical Biometric Bar (Always Visible & Accessible) ── */}
           {!isSuccess && (
