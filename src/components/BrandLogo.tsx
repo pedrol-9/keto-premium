@@ -16,7 +16,7 @@ export function BrandIcon({ className = "" }: { className?: string }) {
         kb-icon-wrap
         relative flex items-center justify-center
         w-[74px] h-[74px] shrink-0
-        rounded-full overflow-visible
+        rounded-full overflow-hidden
         group-hover:scale-105 transition-all duration-300
         ${className}
       `}

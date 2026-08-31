@@ -47,7 +47,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${inter.variable} ${manrope.variable} ${cormorant.variable} h-full antialiased`}
+      className={`${inter.variable} ${manrope.variable} ${cormorant.variable} h-full antialiased overflow-x-hidden`}
     >
       <head>
         <link
@@ -58,7 +58,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#ffffff" />
         <meta name="msapplication-TileColor" content="#ffffff" />
       </head>
-      <body className="min-h-full flex flex-col bg-[#f8f9fa] text-[#191c1d]">
+      <body className="min-h-full flex flex-col bg-[#f8f9fa] text-[#191c1d] overflow-x-hidden">
         {children}
       </body>
     </html>
