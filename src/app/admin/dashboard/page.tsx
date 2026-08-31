@@ -75,7 +75,7 @@ export default function AdminDashboardPage() {
       const saved = localStorage.getItem("whatsappRedirects");
       if (saved) return parseInt(saved, 10);
     }
-    return 342;
+    return 0;
   });
   const [orders, setOrders] = useState<Order[]>(() => {
     if (typeof window !== "undefined") {
