@@ -15,14 +15,15 @@ jobs:
     steps:
       - name: Ping Supabase REST API
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
           echo "⏰ $(date -u) — Pinging Supabase project..."
 
+          CLEAN_URL="${SUPABASE_URL%/}"
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
             -X GET \
-            "${SUPABASE_URL}/rest/v1/config?select=key,value&limit=1" \
+            "${CLEAN_URL}/rest/v1/config?select=key,value&limit=1" \
             -H "apikey: ${SUPABASE_ANON_KEY}" \
             -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
 
