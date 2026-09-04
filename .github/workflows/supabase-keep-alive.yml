@@ -8,17 +8,20 @@ on:
 
 jobs:
   ping:
-    name: Ping Supabase
+    name: Ping Supabase & Notify
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
       - name: Ping Supabase REST API
+        id: ping_supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
-          echo "⏰ $(date -u) — Pinging Supabase project..."
+          NOW=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          echo "timestamp=$NOW" >> "$GITHUB_OUTPUT"
+          echo "⏰ $NOW — Pinging Supabase project..."
 
           CLEAN_URL="${SUPABASE_URL%/}"
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
@@ -27,11 +30,100 @@ jobs:
             -H "apikey: ${SUPABASE_ANON_KEY}" \
             -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
 
+          echo "status_code=$RESPONSE" >> "$GITHUB_OUTPUT"
           echo "📡 HTTP Status: $RESPONSE"
 
           if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 300 ]; then
             echo "✅ Supabase is alive and responding."
+            echo "success=true" >> "$GITHUB_OUTPUT"
           else
             echo "❌ Unexpected response: $RESPONSE"
+            echo "success=false" >> "$GITHUB_OUTPUT"
             exit 1
+          fi
+
+      - name: Send Notification via Resend
+        if: always()
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          TO_EMAIL: ${{ secrets.RESEND_TO_EMAIL || 'psanabria999@gmail.com' }}
+          HTTP_STATUS: ${{ steps.ping_supabase.outputs.status_code || 'N/A' }}
+          TIMESTAMP: ${{ steps.ping_supabase.outputs.timestamp }}
+          PING_SUCCESS: ${{ steps.ping_supabase.outputs.success }}
+          RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        run: |
+          if [ -z "$RESEND_API_KEY" ]; then
+            echo "⚠️ Secret RESEND_API_KEY no configurado en GitHub Secrets."
+            echo "Para recibir notificaciones, añade RESEND_API_KEY en: Repository Settings > Secrets and variables > Actions."
+            exit 0
+          fi
+
+          if [ "$PING_SUCCESS" = "true" ]; then
+            SUBJECT="✅ [Supabase Keep-Alive] Proyecto activo (HTTP $HTTP_STATUS)"
+            COLOR="#10b981"
+            STATUS_TEXT="Activo y respondiendo correctamente"
+            BADGE="EXITO"
+          else
+            SUBJECT="🚨 [Supabase Keep-Alive] Error al pingear Supabase (HTTP $HTTP_STATUS)"
+            COLOR="#ef4444"
+            STATUS_TEXT="Error en la respuesta o timeout"
+            BADGE="FALLO"
+          fi
+
+          HTML_BODY="<div style='font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px; background: #ffffff;'>
+            <div style='margin-bottom: 16px;'>
+              <span style='background-color: ${COLOR}; color: #ffffff; padding: 4px 12px; border-radius: 9999px; font-weight: bold; font-size: 12px; text-transform: uppercase;'>${BADGE}</span>
+            </div>
+            <h2 style='color: #111827; margin-top: 0; margin-bottom: 8px;'>Supabase Keep-Alive Report</h2>
+            <p style='color: #4b5563; margin-top: 0; font-size: 14px;'>El workflow de GitHub Actions se ha ejecutado para mantener activa tu base de datos de Supabase.</p>
+            
+            <div style='background-color: #f9fafb; border-radius: 8px; padding: 16px; margin: 20px 0;'>
+              <table style='width: 100%; border-collapse: collapse;'>
+                <tr>
+                  <td style='padding: 6px 0; color: #6b7280; font-size: 14px;'><strong>Estado:</strong></td>
+                  <td style='padding: 6px 0; color: #111827; font-size: 14px;'>${STATUS_TEXT}</td>
+                </tr>
+                <tr>
+                  <td style='padding: 6px 0; color: #6b7280; font-size: 14px;'><strong>Código HTTP:</strong></td>
+                  <td style='padding: 6px 0; color: #111827; font-size: 14px; font-family: monospace;'>${HTTP_STATUS}</td>
+                </tr>
+                <tr>
+                  <td style='padding: 6px 0; color: #6b7280; font-size: 14px;'><strong>Fecha (UTC):</strong></td>
+                  <td style='padding: 6px 0; color: #111827; font-size: 14px;'>${TIMESTAMP}</td>
+                </tr>
+                <tr>
+                  <td style='padding: 6px 0; color: #6b7280; font-size: 14px;'><strong>Repositorio:</strong></td>
+                  <td style='padding: 6px 0; color: #111827; font-size: 14px;'>${{ github.repository }}</td>
+                </tr>
+              </table>
+            </div>
+
+            <div style='margin-top: 24px; text-align: center;'>
+              <a href='${RUN_URL}' style='background-color: #000000; color: #ffffff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500; display: inline-block;'>Ver ejecución en GitHub Actions</a>
+            </div>
+
+            <hr style='border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;' />
+            <p style='color: #9ca3af; font-size: 12px; margin: 0; text-align: center;'>Notificación enviada automáticamente vía Resend</p>
+          </div>"
+
+          RESPONSE_EMAIL=$(curl -s -w "\n%{http_code}" -X POST 'https://api.resend.com/emails' \
+            -H "Authorization: Bearer ${RESEND_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+                  --arg from "Supabase Keep-Alive <onboarding@resend.dev>" \
+                  --arg to "$TO_EMAIL" \
+                  --arg subject "$SUBJECT" \
+                  --arg html "$HTML_BODY" \
+                  '{from: $from, to: [$to], subject: $subject, html: $html}')")
+
+          HTTP_EMAIL_CODE=$(echo "$RESPONSE_EMAIL" | tail -n1)
+          RESPONSE_EMAIL_BODY=$(echo "$RESPONSE_EMAIL" | sed '$d')
+
+          echo "📨 Resend API HTTP Status: $HTTP_EMAIL_CODE"
+          echo "📨 Resend Response: $RESPONSE_EMAIL_BODY"
+
+          if [ "$HTTP_EMAIL_CODE" -ge 200 ] && [ "$HTTP_EMAIL_CODE" -lt 300 ]; then
+            echo "✅ Email enviado exitosamente a $TO_EMAIL"
+          else
+            echo "❌ Error al enviar email con Resend"
           fi
