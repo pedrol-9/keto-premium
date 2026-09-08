@@ -33,7 +33,12 @@ jobs:
             -X GET \
             "${CLEAN_URL}/rest/v1/config?select=key,value&limit=1" \
             -H "apikey: ${SUPABASE_ANON_KEY}" \
-            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" || echo "000")
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" 2>/dev/null || true)
+
+          # Normalizar en caso de curl exitoso con 000 o fallo
+          if [ -z "$RESPONSE" ] || [[ "$RESPONSE" == *"000"* ]]; then
+            RESPONSE="000"
+          fi
 
           echo "status_code=$RESPONSE" >> "$GITHUB_OUTPUT"
           echo "📡 HTTP Status: $RESPONSE"
