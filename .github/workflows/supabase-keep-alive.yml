@@ -2,8 +2,8 @@ name: Supabase Keep-Alive
 
 on:
   schedule:
-    # Runs every 3 days at 08:00 UTC (well within Supabase's 1-week inactivity window)
-    - cron: "0 8 */3 * *"
+    # Runs daily at 08:00 UTC to guarantee Supabase remains active and avoids inactivity pause
+    - cron: "0 8 * * *"
   workflow_dispatch: # Allow manual trigger from the GitHub Actions UI
 
 jobs:
@@ -24,11 +24,16 @@ jobs:
           echo "⏰ $NOW — Pinging Supabase project..."
 
           CLEAN_URL="${SUPABASE_URL%/}"
+          
+          # Realizar curl permitiendo captura de fallo de red/DNS (000)
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --connect-timeout 10 \
+            --max-time 20 \
+            --retry 2 \
             -X GET \
             "${CLEAN_URL}/rest/v1/config?select=key,value&limit=1" \
             -H "apikey: ${SUPABASE_ANON_KEY}" \
-            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" || echo "000")
 
           echo "status_code=$RESPONSE" >> "$GITHUB_OUTPUT"
           echo "📡 HTTP Status: $RESPONSE"
@@ -36,6 +41,10 @@ jobs:
           if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 300 ]; then
             echo "✅ Supabase is alive and responding."
             echo "success=true" >> "$GITHUB_OUTPUT"
+          elif [ "$RESPONSE" = "000" ]; then
+            echo "❌ No se pudo conectar con Supabase (Error DNS / Proyecto pausado)"
+            echo "success=false" >> "$GITHUB_OUTPUT"
+            exit 1
           else
             echo "❌ Unexpected response: $RESPONSE"
             echo "success=false" >> "$GITHUB_OUTPUT"
@@ -64,9 +73,13 @@ jobs:
             STATUS_TEXT="Activo y respondiendo correctamente"
             BADGE="EXITO"
           else
-            SUBJECT="🚨 [Supabase Keep-Alive] Error al pingear Supabase (HTTP $HTTP_STATUS)"
+            if [ "$HTTP_STATUS" = "000" ]; then
+              STATUS_TEXT="No se pudo conectar (Proyecto pausado en Supabase o falla de red). Ingresa a tu panel de Supabase y pulsa 'Resume project'."
+            else
+              STATUS_TEXT="Error en la respuesta de Supabase (código no esperado)"
+            fi
+            SUBJECT="🚨 [Supabase Keep-Alive] Alerta: Fallo al pingear Supabase (HTTP $HTTP_STATUS)"
             COLOR="#ef4444"
-            STATUS_TEXT="Error en la respuesta o timeout"
             BADGE="FALLO"
           fi
 
