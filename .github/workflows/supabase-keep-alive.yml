@@ -73,7 +73,7 @@ jobs:
           fi
 
           if [ "$PING_SUCCESS" = "true" ]; then
-            SUBJECT="✅ [Sophos Core] Supabase Keep-Alive Exitoso"
+            SUBJECT="✅ [Keto Boutique] Supabase Keep-Alive Exitoso"
             COLOR="#10b981"
             STATUS_TEXT="Activo y respondiendo correctamente (HTTP $HTTP_STATUS)"
             BADGE="EXITO"
@@ -83,7 +83,7 @@ jobs:
             else
               STATUS_TEXT="Error en la respuesta de Supabase (código no esperado: $HTTP_STATUS)"
             fi
-            SUBJECT="🚨 [Sophos Core] Supabase Keep-Alive Fallido (HTTP $HTTP_STATUS)"
+            SUBJECT="🚨 [Keto Boutique] Supabase Keep-Alive Fallido (HTTP $HTTP_STATUS)"
             COLOR="#ef4444"
             BADGE="FALLO"
           fi
@@ -92,14 +92,14 @@ jobs:
             <div style='margin-bottom: 16px;'>
               <span style='background-color: ${COLOR}; color: #ffffff; padding: 4px 12px; border-radius: 9999px; font-weight: bold; font-size: 12px; text-transform: uppercase;'>${BADGE}</span>
             </div>
-            <h2 style='color: #111827; margin-top: 0; margin-bottom: 8px;'>Sophos Core — Supabase Keep-Alive Report</h2>
-            <p style='color: #4b5563; margin-top: 0; font-size: 14px;'>El workflow de GitHub Actions se ha ejecutado para mantener activa tu base de datos de Supabase en <strong>Sophos Core</strong>.</p>
+            <h2 style='color: #111827; margin-top: 0; margin-bottom: 8px;'>Keto Boutique — Supabase Keep-Alive Report</h2>
+            <p style='color: #4b5563; margin-top: 0; font-size: 14px;'>El workflow de GitHub Actions se ha ejecutado para mantener activa tu base de datos de Supabase en <strong>Keto Boutique</strong>.</p>
             
             <div style='background-color: #f9fafb; border-radius: 8px; padding: 16px; margin: 20px 0;'>
               <table style='width: 100%; border-collapse: collapse;'>
                 <tr>
                   <td style='padding: 6px 0; color: #6b7280; font-size: 14px;'><strong>Proyecto:</strong></td>
-                  <td style='padding: 6px 0; color: #111827; font-size: 14px; font-weight: 600;'>Sophos Core (keto-premium)</td>
+                  <td style='padding: 6px 0; color: #111827; font-size: 14px; font-weight: 600;'>Keto Boutique (keto-premium)</td>
                 </tr>
                 <tr>
                   <td style='padding: 6px 0; color: #6b7280; font-size: 14px;'><strong>Estado:</strong></td>
@@ -132,7 +132,7 @@ jobs:
             -H "Authorization: Bearer ${RESEND_API_KEY}" \
             -H "Content-Type: application/json" \
             -d "$(jq -n \
-                  --arg from "Sophos Core <onboarding@resend.dev>" \
+                  --arg from "Keto Boutique <onboarding@resend.dev>" \
                   --arg to "$TO_EMAIL" \
                   --arg subject "$SUBJECT" \
                   --arg html "$HTML_BODY" \
